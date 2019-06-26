@@ -1,14 +1,13 @@
 import asyncio
 import os
-from datetime import datetime
+
 from .subreddit import Subreddit
-from .reaction import *
-from .item import RedditItem
-from .yaml import *
+from .reddithelper import *
 
-class Banhammer():
 
-    def __init__(self, reddit, loop_time=5*60):
+class Banhammer:
+
+    def __init__(self, reddit, loop_time=5 * 60):
         self.reddit = reddit
         self.subreddits = list()
         self.loop = asyncio.get_event_loop()
@@ -19,9 +18,10 @@ class Banhammer():
 
     def add_subreddits(self, *subs):
         for sub in subs:
-            s = Subreddit(self.reddit, subreddit=str(sub))
-            s.setup()
-            self.subreddits.append(s)
+            if type(sub) != Subreddit:
+                sub = Subreddit(self.reddit, subreddit=str(sub))
+                sub.setup()
+            self.subreddits.append(sub)
 
     def new(self, **kwargs):
         def assign(func):
@@ -31,6 +31,7 @@ class Banhammer():
             }
             self._new.append(data)
             return data
+
         return assign
 
     async def send_new(self):
@@ -48,6 +49,9 @@ class Banhammer():
                     for post in sub.get_new():
                         await func["func"](post)
             await asyncio.sleep(self.loop_time)
+
+    def get_item(self, str):
+        return get_item(self, str)
 
     def run(self):
         if len(self._new) > 0: self.loop.create_task(self.send_new())

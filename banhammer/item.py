@@ -12,8 +12,8 @@ class RedditItem:
         self.source = source
 
     def __str__(self):
-        return "New {} in /r/{} by /u/{}!\n\n**Title:** {}\n**Body:**\n{}".format(self.type, self.item.subreddit,
-                                                                                  self.item.author, self.item.title,
+        return "New {} in /r/{} by /u/{}!\n\nhttps://www.reddit.com{}\n\n**Title:** {}\n**Body:**\n{}".format(self.type, self.item.subreddit,
+                                                                                  self.item.author, self.item.permalink, self.item.title,
                                                                                   self.item.selftext)
 
     def save(self, path):
@@ -22,3 +22,6 @@ class RedditItem:
 
     def get_reactions(self):
         return self.subreddit.get_reactions(self.item)
+
+    def get_reaction(self, emoji):
+        return self.subreddit.get_reaction(emoji, self.item)
