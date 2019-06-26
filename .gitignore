@@ -112,3 +112,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+D6B.py
+discord.ini
+login.py
