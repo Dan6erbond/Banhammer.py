@@ -3,7 +3,7 @@ import os
 
 from .subreddit import Subreddit
 from .reddithelper import *
-
+from .item import RedditItem
 
 class Banhammer:
 
@@ -51,7 +51,8 @@ class Banhammer:
             await asyncio.sleep(self.loop_time)
 
     def get_item(self, str):
-        return get_item(self, str)
+        item = get_item(self, str)
+        return RedditItem(item["item"], item["subreddit"], "message")
 
     def run(self):
         if len(self._new) > 0: self.loop.create_task(self.send_new())

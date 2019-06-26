@@ -1,5 +1,4 @@
 import praw
-from .item import RedditItem
 from urllib.parse import urlparse
 
 def get_item(bh, str):
@@ -19,7 +18,10 @@ def get_item(bh, str):
             try:
                 modmail = subreddit.subreddit.modmail(id)
                 if hasattr(modmail, "subject"):
-                    return RedditItem(modmail, subreddit, "message")
+                    return {
+                        "item": modmail,
+                        "subreddit": subreddit
+                    }
             except Exception as e:
                 print("{}: {}".format(type(e), e))
 
@@ -50,7 +52,10 @@ def get_item(bh, str):
     if subreddit is None:
         return None
 
-    return RedditItem(item, subreddit, "message")
+    return {
+        "item": item,
+        "subreddit": sub
+    }
 
 def get_item_url(item):
     if isinstance(item, praw.models.Submission):
