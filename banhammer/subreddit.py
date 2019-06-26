@@ -1,21 +1,31 @@
 import json
 import praw
+import os
 from .yaml import *
 from .reaction import *
+from .item import *
 
 class Subreddit:
 
     def __init__(self, reddit, dict={}, subreddit="", stream_new=True, stream_comments=False, stream_reports=True, stream_mail=True, stream_queue=True):
         self.reddit = reddit
+
         self.subreddit = dict["subreddit"] if "subreddit" in dict else subreddit
+        if type(self.subreddit) == str: self.subreddit = reddit.subreddit(self.subreddit)
+
+        self.name = self.subreddit.display_name.replace("r/", "").replace("/", "")
+
         self.stream_new = dict["stream_new"] if "stream_new" in dict else stream_new
         self.stream_comments = dict["stream_comments"] if "stream_comments" in dict else stream_comments
         self.stream_reports = dict["stream_reports"] if "stream_reports" in dict else stream_reports
         self.stream_mail = dict["stream_mail"] if "stream_mail" in dict else stream_mail
         self.stream_queue = dict["stream_queue"] if "stream_queue" in dict else stream_queue
 
+        self.reactions = list()
+        self.load_reactions()
+
     def __str__(self):
-        str = self.subreddit
+        str = "/r/" + self.name
         if self.stream_new:
             str += " | New Posts"
         if self.stream_comments:
@@ -29,12 +39,10 @@ class Subreddit:
         return str
 
     def setup(self):
-        sub = self.reddit.subreddit(self.subreddit)
+        if self.subreddit.quarantine:
+            self.subreddit.quaran.opt_in()
 
-        if sub.quarantine:
-            sub.quaran.opt_in()
-
-        settings = sub.mod.settings()
+        settings = self.subreddit.mod.settings()
         self.stream_new = False if settings["spam_links"] == "all" or settings["spam_selfposts"] == "all" else True
         self.stream_comments = True if settings["spam_comments"] == "all" else False
         self.stream_queue = True if settings["spam_links"] == "all" or settings["spam_selfposts"] == "all" else False
@@ -47,7 +55,7 @@ class Subreddit:
         '''
 
         dict = {
-            "subreddit": self.subreddit,
+            "subreddit": self.name,
             "stream_new": self.stream_new,
             "stream_comments": self.stream_comments,
             "stream_reports": self.stream_reports,
@@ -58,48 +66,25 @@ class Subreddit:
 
         return dict
 
-    def get_reactions(self, item, reactions=list(), ce=True):
-        if ce:
+    def load_reactions(self, custom=True):
+        if custom:
             try:
-                sub = self.reddit.subreddit(self.subreddit)
-                reaction_page = sub.wiki['banhammer-reactions']
-                result = get_list(reaction_page.content_md)
-
-                ignore = list()
-                for item in result:
-                    if "ignore" in item:
-                        ignore = [i.strip() for i in ignore.split(",")]
-                        result.remove(item)
-
-                rs = [Reaction(self.reddit, d) for d in result]
-                ignore.extend(rs)
-                self.remove_reactions(reactions, ignore) # removes duplicate reactions
-                reactions.extend(rs)
+                reaction_page = self.subreddit.wiki['banhammer-reactions']
+                result = get_reactions(self.reddit, reaction_page.content_md)["reactions"]
             except Exception as e:
                 print(e)
 
+        if not len(self.reactions) > 0:
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            with open(dir_path + "/reactions.yaml", encoding="utf8") as f:
+                self.reactions = get_reactions(self.reddit, f.read())["reactions"]
+
+    def get_reactions(self, item):
         _r = list()
-        for reaction in reactions:
+        for reaction in self.reactions:
             if reaction.eligible(item):
                 _r.append(reaction)
-        if len(_r) < 1:
-            with open(self.dir_path + "/reactions.yaml", encoding="utf8") as f:
-                return get_reactions(self.reddit, f.read())
-
-    def remove_reactions(self, reactions, remove):
-        emojis = set()
-
-        for item in remove:
-            if isinstance(item, Reaction):
-                emojis.add(item.emoji)
-            elif isinstance(item, str):
-                emojis.add(item)
-
-        for react in reactions:
-            if react.emoji in emojis:
-                reactions.remove(react)
-
-        return reactions
+        return _r
 
     def get_reaction(self, emoji, item):
         for reaction in self.get_reactions(item):
@@ -107,50 +92,80 @@ class Subreddit:
                 return reaction
 
     def get_new(self):
-        sub = self.reddit.subreddit(self.subreddit)
-
-        for submission in sub.new():
-            if submission.author is None:
-                # item.mod.remove(True)
-                continue
-            yield submission
+        path = "files/{}_new.txt".format(self.subreddit.id)
+        ids = list()
+        if os.path.exists(path):
+            with open(path) as f:
+                ids = f.read().splitlines()
+        for submission in self.subreddit.new():
+            if submission.id in ids:
+                break
+            item = RedditItem(submission, self, "new")
+            item.save(path)
+            yield item
 
     def get_comments(self):
-        sub = self.reddit.subreddit(self.subreddit)
-
-        for comment in sub.comments(limit=250):
-            if comment.author is None:
-                # item.mod.remove(True)
-                continue
-            yield comment
+        path = "files/{}_comments.txt".format(self.subreddit.id)
+        ids = list()
+        if os.path.exists(path):
+            with open(path) as f:
+                ids = f.read().splitlines()
+        for comment in self.subreddit.comments(limit=250):
+            if submission.id in ids:
+                break
+            item = RedditItem(comment, self, "new")
+            item.save(path)
+            yield item
 
     def get_reports(self):
-        sub = self.reddit.subreddit(self.subreddit)
-
-        for item in sub.mod.reports():
-            if item.author is None:
-                # item.mod.remove(True)
-                continue
+        path = "files/{}_reports.txt".format(self.subreddit.id)
+        ids = list()
+        if os.path.exists(path):
+            with open(path) as f:
+                ids = f.read().splitlines()
+        for item in self.subreddit.mod.reports():
+            if item.id in ids:
+                break
+            item = RedditItem(item, self, "reports")
+            item.save(path)
             yield item
 
     def get_mail(self):
-        sub = self.reddit.subreddit(self.subreddit)
-
-        for mail in sub.modmail.conversations():
-            yield mail
+        path = "files/{}_mail.txt".format(self.subreddit.id)
+        ids = list()
+        if os.path.exists(path):
+            with open(path) as f:
+                ids = f.read().splitlines()
+        for mail in self.subreddit.modmail.conversations():
+            if mail.id in ids:
+                break
+            item = RedditItem(mail, self, "modmail")
+            item.save(path)
+            yield item
 
     def get_queue(self):
-        sub = self.reddit.subreddit(self.subreddit)
-
-        for item in sub.mod.modqueue():
-            if item.author is None:
-                # item.mod.remove(True)
-                continue
+        path = "files/{}_queue.txt".format(self.subreddit.id)
+        ids = list()
+        if os.path.exists(path):
+            with open(path) as f:
+                ids = f.read().splitlines()
+        for item in self.subreddit.mod.modqueue():
+            if item.id in ids:
+                break
+            item = RedditItem(item, self, "queue")
+            item.save(path)
             yield item
 
     def get_mod_actions(self, mods):
-        sub = self.reddit.subreddit(self.subreddit)
-
-        for mod in mods:
-            for action in sub.mod.log(limit=None, mod=mod):
-                yield action
+        path = "files/{}_actions.txt".format(self.subreddit.id)
+        ids = list()
+        if os.path.exists(path):
+            with open(path) as f:
+                ids = f.read().splitlines()
+        for action in self.subreddit.mod.log(limit=None):
+            if action.id in ids:
+                break
+            if str(action.mod).lower() in mods:
+                item = RedditItem(action, self, "log")
+                item.save(path)
+                yield item

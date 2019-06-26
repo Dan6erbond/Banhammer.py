@@ -151,9 +151,6 @@ def get_reactions(reddit, yaml):
     for item in result:
         if "ignore" in item:
             ignore = [i.strip() for i in item["ignore"].split(",")]
-            for i in ignore:
-                if type(i) == str:
-
             result.remove(item)
             break
     reactions = result
@@ -162,3 +159,19 @@ def get_reactions(reddit, yaml):
         "ignore": ignore,
         "reactions": reactions
     }
+
+
+def ignore_reactions(reactions, remove):
+    emojis = set()
+
+    for item in remove:
+        if isinstance(item, Reaction):
+            emojis.add(item.emoji)
+        elif isinstance(item, str):
+            emojis.add(item)
+
+    for react in reactions:
+        if react.emoji in emojis:
+            reactions.remove(react)
+
+    return reactions

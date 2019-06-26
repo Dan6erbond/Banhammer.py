@@ -16,7 +16,6 @@ class Banhammer():
         self.loop_time = loop_time
         if not os.path.exists("files"):
             os.mkdir("files")
-        self.dir_path = os.path.dirname(os.path.realpath(__file__))
 
     def add_subreddits(self, *subs):
         for sub in subs:
@@ -24,7 +23,7 @@ class Banhammer():
             s.setup()
             self.subreddits.append(s)
 
-    def new(self, *args, **kwargs):
+    def new(self, **kwargs):
         def assign(func):
             data = {
                 "func": func,
@@ -40,23 +39,14 @@ class Banhammer():
                 subs = list()
                 if func["sub"] is not None:
                     for sub in self.subreddits:
-                        if sub.subreddit.lower() == func["sub"].lower():
+                        if str(sub.subreddit).lower() == func["sub"].lower():
                             subs.append(sub)
                             break
                 else:
                     subs.extend(self.subreddits)
                 for sub in subs:
-                    path = "files/{}_new.txt".format(self.reddit.subreddit(sub.subreddit).id)
-                    ids = list()
-                    if os.path.exists(path):
-                        with open(path) as f:
-                            ids = f.read().splitlines()
                     for post in sub.get_new():
-                        item = RedditItem(post)
-                        if item.id in ids:
-                            break
-                        item.save(path)
-                        await func["func"](item)
+                        await func["func"](post)
             await asyncio.sleep(self.loop_time)
 
     def run(self):
