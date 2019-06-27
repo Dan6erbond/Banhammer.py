@@ -1,12 +1,19 @@
-import json
+import os
+
 import praw
-from .yaml import *
+
+from . import yaml
+
 
 class Reaction:
 
-    def __init__(self, reddit, dict={}, emoji="", type="", flair="", approve=False, mark_nsfw=False, lock=False, reply="", ban=None, min_votes=1):
+    def __init__(self, reddit, dict={}, emoji="", type="", flair="", approve=False, mark_nsfw=False, lock=False,
+                 reply="", ban=None, min_votes=1):
         self.reddit = reddit
+
         self.emoji = dict["emoji"] if "emoji" in dict else emoji
+        self.emoji = self.emoji.strip()
+
         self.type = dict["type"] if "type" in dict else type
         self.flair = dict["flair"] if "flair" in dict else flair
         self.approve = dict["approve"] if "approve" in dict else approve
@@ -15,6 +22,7 @@ class Reaction:
         self.reply = dict["reply"] if "reply" in dict else reply
         self.ban = dict["ban"] if "ban" in dict else ban
         self.min_votes = dict["min_votes"] if "min_votes" in dict else min_votes
+
         self.item = None
 
     def get_dict(self):
@@ -36,21 +44,21 @@ class Reaction:
         if item is None and self.item is not None:
             item = self.item
         else:
-            return None # Exception
+            return None  # Exception
 
         if isinstance(item.item, praw.models.Submission) and not (self.type == "submission" or self.type == ""):
-            return None # Exception
+            return None  # Exception
         if isinstance(item.item, praw.models.Comment) and not (self.type == "comment" or self.type == ""):
-            return None # Exception
+            return None  # Exception
         if isinstance(item.item, praw.models.ModmailConversation) and self.type != "mail":
-            return None # Exception
+            return None  # Exception
 
         item_type = item.type.title()
         actions = list()
 
         try:
             test = item.item.id
-        except: # item was removed
+        except:  # item was removed
             if isinstance(item.item, praw.models.Submission) or isinstance(item.item, praw.models.Comment):
                 item.item.mod.remove()
                 actions.append("removed")
@@ -77,8 +85,9 @@ class Reaction:
 
                 action_string = " and ".join(actions)
                 return_string = "**{} {} by {}!**\n\n" \
-                            "{} by {}:\n\n" \
-                            "{}".format(item_type, action_string, "Banhammer", item_type, "[deleted]", item.get_url())
+                                "{} by {}:\n\n" \
+                                "{}".format(item_type, action_string, "Banhammer", item_type, "[deleted]",
+                                            item.get_url())
                 return {
                     "type": self.type,
                     "approved": False,
@@ -101,7 +110,7 @@ class Reaction:
                 item.item.mod.nsfw()
                 actions.append("marked NSFW")
 
-            if self.lock:
+            if self.lock or not self.approve:
                 item.item.mod.lock()
                 actions.append("locked")
             else:
@@ -115,11 +124,13 @@ class Reaction:
         if isinstance(self.ban, int):
             if self.ban == 0:
                 item.item.subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules",
-                                          ban_message=formatter.format_ban_message(item.item, self.ban), note="Bot Ban")
+                                               ban_message=formatter.format_ban_message(item.item, self.ban),
+                                               note="Bot Ban")
                 actions.append("/u/" + item.item.author.name + " permanently banned")
             else:
                 item.item.subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules", duration=self.ban,
-                                          ban_message=formatter.format_ban_message(item.item, self.ban), note="Bot Ban")
+                                               ban_message=formatter.format_ban_message(item.item, self.ban),
+                                               note="Bot Ban")
                 actions.append("/u/" + item.item.author.name + " banned for {} day(s)".format(self.ban))
 
         actions_string = " and ".join(actions)
@@ -128,7 +139,22 @@ class Reaction:
                         "{} by /u/{}:\n\n" \
                         "{}".format(item_type, actions_string, user, item_type, item.item.author.name, item.get_url())
 
-        #TODO: Remove item ID from files in case it's present.
+        reports = "files/{}_reports.txt".format(item.subreddit.subreddit.id)
+        if os.path.exists(reports):
+            with open(reports) as f:
+                ids = [id.strip() for id in f.read().splitlines()]
+                if item.id in ids:
+                    ids.remove(item.id)
+                    with open(reports, "w+") as f:
+                        f.write("\n".join(ids))
+        queue = "files/{}_queue.txt".format(item.subreddit.subreddit.id)
+        if os.path.exists(queue):
+            with open(queue) as f:
+                ids = [id.strip() for id in f.read().splitlines()]
+                if item.id in ids:
+                    ids.remove(item.id)
+                    with open(queue, "w+") as f:
+                        f.write("\n".join(ids))
 
         return {
             "type": self.type,
@@ -143,14 +169,14 @@ class Reaction:
         elif isinstance(item, praw.models.Comment):
             if self.type == "" or self.type == "comment":
                 return True
-        else:
+        elif isinstance(item, praw.models.ModmailMessage):
             if self.type == "mail":
                 return True
         return False
 
 
-def get_reactions(reddit, yaml):
-    result = get_list(yaml)
+def get_reactions(reddit, yml):
+    result = yaml.get_list(yml)
     ignore = list()
     emojis = set()
     for item in result:

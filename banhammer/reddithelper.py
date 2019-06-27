@@ -1,20 +1,26 @@
-import praw
+import re
 from urllib.parse import urlparse
 
-def get_item(bh, str):
-    url = ""
-    for line in str.splitlines():
-        for segment in line.split(" "):
-            if is_url(segment.strip()):
-                url = segment.strip()
+from .item import RedditItem
 
-    if url == "" or url is None:
-        return None
 
+def get_item(reddit, subreddits, str):
+    reg = "((https:\/\/)?((www|old|np|mod)\.)?(reddit|redd){1}(\.com|\.it){1}([a-zA-Z0-9\/_]+))"
+    for u in re.findall(reg, str):
+        if is_url(u[0]):
+            item = get_item_from_url(reddit, subreddits, u[0])
+            if item is not None:
+                return item
+            else:
+                continue
+    return None
+
+
+def get_item_from_url(reddit, subreddits, url):
     if url.startswith("https://mod.reddit.com/mail/all/"):
         id = url.strip()[-5:]
 
-        for subreddit in bh.subreddits:
+        for subreddit in subreddits:
             try:
                 modmail = subreddit.subreddit.modmail(id)
                 if hasattr(modmail, "subject"):
@@ -29,10 +35,10 @@ def get_item(bh, str):
 
     item = None
     try:
-        item = bh.reddit.comment(url=url)
+        item = reddit.comment(url=url)
     except:
         try:
-            item = bh.reddit.submission(url=url)
+            item = reddit.submission(url=url)
         except:
             print("Invalid URL!")
             return None
@@ -44,7 +50,7 @@ def get_item(bh, str):
         return None
 
     sub = None
-    for sub in bh.subreddits:
+    for sub in subreddits:
         if sub.subreddit.id == item.subreddit.id:
             subreddit = sub
             break
@@ -52,25 +58,8 @@ def get_item(bh, str):
     if subreddit is None:
         return None
 
-    return {
-        "item": item,
-        "subreddit": sub
-    }
+    return RedditItem(item, sub, "url")
 
-def get_item_url(item):
-    if isinstance(item, praw.models.Submission):
-        return "https://www.reddit.com/r/{}/comments/{}".format(item.subreddit, item)
-    elif isinstance(item, praw.models.Comment):
-        return "https://www.reddit.com/r/{}/comments/{}/_/{}".format(item.subreddit, item.submission, item)
-    elif isinstance(item, praw.models.ModmailConversation):
-        return "https://mod.reddit.com/mail/all/" + item.id
-    elif isinstance(item, praw.models.Message):
-        if item.was_comment:
-            return "https://www.reddit.com/r/{}/comments/{}/_/{}".format(item.subreddit, item.submission, item)
-        else:
-            return "https://www.reddit.com/message/messages/{}".format(item)
-    elif isinstance(item, praw.models.Subreddit):
-        return "https://www.reddit.com/r/" + item.display_name
 
 def is_url(url):
     check = urlparse(url)
