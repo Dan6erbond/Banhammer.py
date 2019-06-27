@@ -33,11 +33,18 @@ class RedditItem:
             colour=self.subreddit.bh.embed_color
         )
 
-        title = "New {} on /r/{} by /u/{}!".format(self.type, self.item.subreddit, self.item.author) if self.type in [
-            "submission", "comment"] else "New message in modmail conversation '{}' on /r/{} by /u/{}!".format(
-            self.item.conversation.subject, self.item.conversation.owner,
-            self.item.author) if self.type == "modmail" else "New action taken by /u/{} on /r/{}!".format(self.item.mod,
-                                                                                                          self.item.subreddit)
+        title = ""
+        if self.type in ["submission", "comment"]:
+            if self.source == "reports":
+                title = "{} reported on /r/{} by /u/{}!".format(self.type.title(), self.item.subreddit, self.item.author)
+            else:
+                title = "New {} on /r/{} by /u/{}!".format(self.type, self.item.subreddit, self.item.author)
+        elif self.type == "modmail":
+            title = "New message in modmail conversation '{}' on /r/{} by /u/{}!".format(self.item.conversation.subject,
+                                                                                         self.item.conversation.owner,
+                                                                                         self.item.author)
+        else:
+            title = "New action taken by /u/{} on /r/{}!".format(self.item.mod, self.item.subreddit)
 
         url = discord.Embed.Empty if self.type not in ["submission", "comment"] else "https://www.reddit.com{}".format(
             self.item.permalink)
@@ -51,12 +58,15 @@ class RedditItem:
                                 inline=False)
             else:
                 embed.add_field(name="URL", value=self.item.url, inline=False)
+            if self.source == "reports":
+                reports = ["{} {}".format(r[1], r[0]) for r in self.item.user_reports]
+                embed.add_field(name="Reports", value="\n".join(reports), inline=False)
         elif self.type == "comment":
             embed.description = self.item.body
         elif self.type == "modmail":
             embed.description = self.item.body_markdown
         elif self.type == "mod action":
-            embed.add_field(name="Action", value=self.item.action, inline=False)
+            embed.description = "Action: `{}`".format(self.item.action)
 
         return embed
 
