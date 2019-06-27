@@ -68,7 +68,7 @@ class RedditItem:
         with open(path) as f:
             ids = [id.strip() for id in f.read().splitlines() if id != ""]
             if self.id in ids:
-                ids.remove(item.id)
+                ids.remove(self.id)
                 with open(path, "w+") as f:
                     f.write("\n".join(ids))
 

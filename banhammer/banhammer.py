@@ -159,8 +159,7 @@ class Banhammer:
         # Add this to use the embed's URL (if one is present):
         # else c.author.url if c.author != discord.Empty and c.author.url != discord.Embed.Empty
         s = str(c) if type(c) != discord.Embed else json.dumps(c.to_dict())
-        item = reddithelper.get_item(self.reddit, self.subreddits, s)
-        return RedditItem(item["item"], item["subreddit"], "message") if item is not None else None
+        return reddithelper.get_item(self.reddit, self.subreddits, s)
 
     def run(self):
         if len(self.item_funcs) > 0: self.loop.create_task(self.send_items())
