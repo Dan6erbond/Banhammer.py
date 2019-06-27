@@ -42,12 +42,11 @@ class Banhammer:
         return assign
 
     def add_new_func(self, func, **kwargs):
-        data = {
+        self.item_funcs.append({
             "func": func,
             "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
             "sub_func": "get_new"
-        }
-        self.item_funcs.append(data)
+        })
 
     def comments(self, **kwargs):
         def assign(func):
@@ -57,12 +56,11 @@ class Banhammer:
         return assign
 
     def add_comments_func(self, func, **kwargs):
-        data = {
+        self.item_funcs.append({
             "func": func,
             "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
             "sub_func": "get_comments"
-        }
-        self.item_funcs.append(data)
+        })
 
     def mail(self, **kwargs):
         def assign(func):
@@ -72,12 +70,11 @@ class Banhammer:
         return assign
 
     def add_mail_func(self, func, **kwargs):
-        data = {
+        self.item_funcs.append({
             "func": func,
             "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
             "sub_func": "get_mail"
-        }
-        self.item_funcs.append(data)
+        })
 
     def queue(self, **kwargs):
         def assign(func):
@@ -87,12 +84,25 @@ class Banhammer:
         return assign
 
     def add_queue_func(self, func, **kwargs):
-        data = {
+        self.item_funcs.append({
             "func": func,
             "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
             "sub_func": "get_queue"
-        }
-        self.item_funcs.append(data)
+        })
+
+    def reports(self, **kwargs):
+        def assign(func):
+            self.add_report_func(func, subreddit=kwargs["subreddit"] if "subreddit" in kwargs else None)
+            return func
+
+        return assign
+
+    def add_report_func(self, func, **kwargs):
+        self.item_funcs.append({
+            "func": func,
+            "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
+            "sub_func": "get_reports"
+        })
 
     async def send_items(self):
         while True:
