@@ -64,6 +64,14 @@ class RedditItem:
         with open(path, "a+") as f:
             f.write("\n" + self.item.id)
 
+    def remove(self, path):
+        with open(path) as f:
+            ids = [id.strip() for id in f.read().splitlines() if id != ""]
+            if self.id in ids:
+                ids.remove(item.id)
+                with open(path, "w+") as f:
+                    f.write("\n".join(ids))
+
     def get_reactions(self):
         return self.subreddit.get_reactions(self.item)
 

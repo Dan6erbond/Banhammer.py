@@ -140,21 +140,9 @@ class Reaction:
                         "{}".format(item_type, actions_string, user, item_type, item.item.author.name, item.get_url())
 
         reports = "files/{}_reports.txt".format(item.subreddit.subreddit.id)
-        if os.path.exists(reports):
-            with open(reports) as f:
-                ids = [id.strip() for id in f.read().splitlines()]
-                if item.id in ids:
-                    ids.remove(item.id)
-                    with open(reports, "w+") as f:
-                        f.write("\n".join(ids))
+        if os.path.exists(reports): item.remove(reports)
         queue = "files/{}_queue.txt".format(item.subreddit.subreddit.id)
-        if os.path.exists(queue):
-            with open(queue) as f:
-                ids = [id.strip() for id in f.read().splitlines()]
-                if item.id in ids:
-                    ids.remove(item.id)
-                    with open(queue, "w+") as f:
-                        f.write("\n".join(ids))
+        if os.path.exists(queue): item.remove(queue)
 
         return {
             "type": self.type,
