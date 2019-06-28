@@ -72,7 +72,8 @@ class Reaction:
                 return {
                     "type": self.type,
                     "approved": False,
-                    "message": return_string
+                    "message": return_string,
+                    "actions": actions
                 }
 
         if isinstance(item.item, praw.models.Submission) or isinstance(item.item, praw.models.Comment):
@@ -91,7 +92,8 @@ class Reaction:
                 return {
                     "type": self.type,
                     "approved": False,
-                    "message": return_string
+                    "message": return_string,
+                    "actions": actions
                 }
 
         if self.approve:
@@ -131,7 +133,7 @@ class Reaction:
                 item.item.subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules", duration=self.ban,
                                                ban_message=formatter.format_ban_message(item.item, self.ban),
                                                note="Bot Ban")
-                actions.append("/u/" + item.item.author.name + " banned for {} day(s)".format(self.ban))
+                actions.append("/u/{} banned for {} day(s)".format(item.item.author.name, self.ban))
 
         actions_string = " and ".join(actions)
 
@@ -147,7 +149,8 @@ class Reaction:
         return {
             "type": self.type,
             "approved": self.approve,
-            "message": return_string
+            "message": return_string,
+            "actions": actions
         }
 
     def eligible(self, item):
