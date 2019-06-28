@@ -147,7 +147,7 @@ class Reaction:
         if os.path.exists(queue): item.remove(queue)
 
         return {
-            "type": self.type,
+            "type": item.type,
             "approved": self.approve,
             "message": return_string,
             "actions": actions
