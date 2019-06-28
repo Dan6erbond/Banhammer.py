@@ -25,6 +25,21 @@ class Reaction:
 
         self.item = None
 
+    def __str__(self):
+        str = self.emoji
+
+        if self.type != "": str += " | " + self.type
+        else: str += " | submissions & comments"
+        if self.flair != "": str += " | flair: " + self.flair
+        str += " | " + "approve" if self.approve else "remove"
+        if self.mark_nsfw: str += " | mark NSFW"
+        if self.lock or not self.approve: str += " | lock"
+        if self.reply != "": str += " | reply"
+        if self.ban is not None: str += " | " + "permanent ban" if self.ban == 0 else "{} day ban".format(self.ban)
+        if self.min_votes: str += " | min votes: {}".format(self.min_votes)
+
+        return str
+
     def get_dict(self):
         dict = {
             "emoji": self.emoji,
