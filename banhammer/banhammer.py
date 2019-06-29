@@ -4,12 +4,11 @@ import os
 
 import discord
 
-from .item import RedditItem
 from . import reddithelper
 from .subreddit import Subreddit
 
-
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
+
 
 class Banhammer:
 
@@ -155,6 +154,24 @@ class Banhammer:
         # else c.author.url if c.author != discord.Empty and c.author.url != discord.Embed.Empty
         s = str(c) if type(c) != discord.Embed else json.dumps(c.to_dict())
         return reddithelper.get_item(self.reddit, self.subreddits, s)
+
+    def get_reactions_embed(self):
+        embed = discord.Embed(
+            colour=self.embed_color
+        )
+        embed.title = "Configured reactions"
+        for sub in self.subreddits: embed.add_field(name="/r/" + str(sub),
+                                                    value="\n".join([str(r) for r in sub.reactions]),
+                                                    inline=False)
+        return embed
+
+    def get_subreddits_embed(self):
+        embed = discord.Embed(
+            colour=self.embed_color
+        )
+        embed.title = "Subreddits' statuses"
+        embed.description = "\n".join([s.get_status() for s in self.subreddits])
+        return embed
 
     def run(self):
         if len(self.item_funcs) > 0: self.loop.create_task(self.send_items())
