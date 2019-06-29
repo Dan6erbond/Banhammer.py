@@ -23,3 +23,10 @@ Banhammer.py is a framework that allows you to build your very own Banhammer! _B
 The awesome people that worked on this bot and its idea to make it a reality!
  - [Dan6erbond](https://dan6erbond.github.io) (Dan6erbond#2259)
  - [lydocia](https://www.lydocia.com) (lydocia#2301)
+
+### Users
+Some bots that makes use of this framework.
+ - [Banhammer](https://dan6erbond.github.io/mariavi/banhammer.html)
+ - [Banhacker](https://github.com/Dan6erbond/Banhacker)
+ - [D6B](https://github.com/Dan6erbond/D6B)
+ - [1000DaysOfPractice](https://github.com/Dan6erbond/1000DOP)
