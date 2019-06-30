@@ -54,7 +54,7 @@ Banhammer.py is open-source! That means we'd love to see your contributions and 
  - Variable and file names must be written in snake-case. (i.e. `variable_name`)
  - Class names must be pascal-case. (i.e. `ClassName`)
  - Only use `async` where necessary.
- - Use the OOP approach: create classes when it makes sense.
+ - Use the OOP approach; create classes when it makes sense.
  - Document as much as you can, preferably with inline comments.
  - Use the Google Style docstring format.
  - Store data in JSON, INI or YAML format to eliminate dependencies for other formats.
