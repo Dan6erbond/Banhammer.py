@@ -5,7 +5,7 @@ with open("README.md") as f:
 
 setuptools.setup(
     name="banhammer.py",
-    version="1.0.0",
+    version="1.8.1",
     license="GPLv3+",
     author="Mariavi developers",
     author_email="moravrav@gmail.com",
