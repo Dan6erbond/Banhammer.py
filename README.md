@@ -52,8 +52,8 @@ bot.run(TOKEN)
 
 ## Contributing
 Banhammer.py is open-source! That means we'd love to see your contributions and hopefully be able to accept them in the next release. If you want to become a contributor, try to follow these rules to keep the code clean:
- - Variable and file names must be written in snake-case. (i.e. `variable_name`)
- - Class names must be pascal-case. (i.e. `ClassName`)
+ - Variable and file names must be written in snake-case. (eg. `variable_name`)
+ - Class names must be pascal-case. (eg. `ClassName`)
  - Only use `async` where necessary.
  - Use the OOP approach; create classes when it makes sense.
  - Document as much as you can, preferably with inline comments.
