@@ -12,7 +12,7 @@ By [Mariavi](https://dan6erbond.github.io/mariavi)
 
 ## Usage
 ### Installation
-Currently the PyPi release of Banhammer.py has not been tested which is why we recommend just cloning the repository to your local machine after which you can `cd` into the directory with the files to install the requirements which are notated in the [requirements.txt](requirements.txt) file:
+Currently the PyPi release of Banhammer.py has not been tested which is why we recommend cloning the repository to your local machine after which you can `cd` into the directory with the files to install the requirements which are notated in the [requirements.txt](requirements.txt) file:
  - `pip install -r requirements.txt`
  
 ### Quick Example
