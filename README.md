@@ -69,6 +69,7 @@ Banhammer.py is open-source! That means we'd love to see your contributions and 
  - [ ] Support for newer PRAW features (such as locking comments).
  - [ ] Validation of inputs.
  - [ ] Better exception handling and outputs.
+ - [ ] Support for variable function arguments.
 
 ## Links
  - [Documentation](https://dan6erbond.github.io/mariavi/banhammer.py.html)
