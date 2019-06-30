@@ -11,7 +11,43 @@ By [Mariavi](https://dan6erbond.github.io/mariavi)
  - Generating embeds and messages for items and actions.
 
 ## Usage
-🚧👷‍♂️Work in progress!
+### Installation
+Currently the PyPi release of Banhammer.py has not been tested which is why we recommend just cloning the repository to your local machine after which you can `cd` into the directory with the files to install the requirements which are notated in the [requirements.txt](requirements.txt) file:
+ - `pip install -r requirements.txt`
+ 
+### Quick Example
+Now that the dependancies have been installed, it's time to create your bot! For that you'll need the general structure of a Discord `Client` or `Bot` (if you want to make use of the commands extension) and then add the bits for Banhammer.py to know what to do.
+
+```python
+import discord
+from discord.ext import commands
+
+from banhammer import banhammer
+from banhammer import subreddit
+
+bot = commands.Bot(command_prefix='>')
+reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
+                     password=PASSWORD, username=USERNAME, user_agent=USER_AGENT)
+bh = banhammer.Banhammer(reddit, bot=bot)
+
+@bot.event
+async def on_command_error(ctx, error):
+    print(error)
+    
+@bot.event
+async def on_ready():
+    print(str(bot.user) + ' is running.')
+    bh.run()
+    
+@bh.new()
+async def handle_new(p):
+    msg = await bot.get_channel(CHANNEL_ID).send(embed=p.get_embed())
+    await p.add_reactions(m)
+
+bot.run(TOKEN)
+```
+
+Make sure you don't forget to call `bh.run()` so that Banhammer can start the internal event loop. For more examples check out [Banhacker](https://github.com/Dan6erbond/Banhacker) as well as the [D6B](https://github.com/Dan6erbond/D6B) bot that both show different (and more complex) implementations of the framework.
 
 ## Contributing
 🚧👷‍♂️Work in progress!
