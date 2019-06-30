@@ -16,7 +16,7 @@ Currently the PyPi release of Banhammer.py has not been tested which is why we r
  - `pip install -r requirements.txt`
  
 ### Quick Example
-Now that the dependencies have been installed, it's time to create your bot! For that you'll need the general structure of a Discord `Client` or `Bot` (if you want to make use of the commands extension) and then add the bits for Banhammer.py to know what to do.
+Once the dependencies have been installed, the bot can be created. For that the general structure of a Discord `Client` or `Bot` (if commands are of importance use `Bot`) needs to be created and then Banhammer initialized as well as ran.
 
 ```python
 import discord
@@ -29,6 +29,7 @@ bot = commands.Bot(command_prefix='>')
 reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET,
                      password=PASSWORD, username=USERNAME, user_agent=USER_AGENT)
 bh = banhammer.Banhammer(reddit, bot=bot)
+bh.add_subreddits(subreddit.Subreddit(bh, SUBNAME))
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -47,7 +48,7 @@ async def handle_new(p):
 bot.run(TOKEN)
 ```
 
-Make sure you don't forget to call `bh.run()` so that Banhammer can start the internal event loop. For more examples check out [Banhacker](https://github.com/Dan6erbond/Banhacker) as well as the [D6B](https://github.com/Dan6erbond/D6B) bot that both show different (and more complex) implementations of the framework.
+`bh.run()` must be called so that Banhammer can start the internal event loop. More examples can be found on the [Banhacker](https://github.com/Dan6erbond/Banhacker) as well as the [D6B](https://github.com/Dan6erbond/D6B) GitHub repositories that both show different (and more complex) implementations of the framework.
 
 ## Contributing
 Banhammer.py is open-source! That means we'd love to see your contributions and hopefully be able to accept them in the next release. If you want to become a contributor, try to follow these rules to keep the code clean:
