@@ -37,12 +37,12 @@
         <entry file="file://$PROJECT_DIR$/banhammer/banhammer.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="429">
-              <caret line="138" column="33" lean-forward="true" selection-start-line="138" selection-start-column="33" selection-end-line="138" selection-end-column="33" />
+              <caret line="145" column="33" lean-forward="true" selection-start-line="145" selection-start-column="33" selection-end-line="145" selection-end-column="33" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/banhammer/item.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="632">
@@ -52,6 +52,11 @@
               </folding>
             </state>
           </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/banhammer/reactions.yaml">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -92,6 +97,11 @@
             <path>
               <item name="Banhammer.py" type="b2602c69:ProjectViewProjectNode" />
               <item name="Banhammer.py" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Banhammer.py" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Banhammer.py" type="462c0819:PsiDirectoryNode" />
+              <item name="banhammer" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -165,7 +175,7 @@
     <frame x="953" y="0" width="1613" height="1407" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1573604" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1573604" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info id="Image Layers" order="3" />
@@ -219,7 +229,7 @@
     <entry file="file://$PROJECT_DIR$/banhammer/banhammer.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="429">
-          <caret line="138" column="33" lean-forward="true" selection-start-line="138" selection-start-column="33" selection-end-line="138" selection-end-column="33" />
+          <caret line="145" column="33" lean-forward="true" selection-start-line="145" selection-start-column="33" selection-end-line="145" selection-end-column="33" />
         </state>
       </provider>
     </entry>
@@ -232,6 +242,9 @@
           </folding>
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/banhammer/reactions.yaml">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>

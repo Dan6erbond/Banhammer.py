@@ -93,7 +93,8 @@ class RedditItem:
             try:
                 await message.add_reaction(r.emoji)
             except Exception as e:
-                yield e
+                print(e)
+                continue
 
     def get_reaction(self, emoji):
         r = self.subreddit.get_reaction(emoji, self.item)
