@@ -35,6 +35,13 @@ class Banhammer:
                 sub.setup()
             self.subreddits.append(sub)
 
+    def remove_subreddit(self, subreddit):
+        for sub in self.subreddits:
+            if str(sub).lower() == subreddit.lower():
+                self.subreddits.remove(sub)
+                return True
+        return False
+
     def new(self, **kwargs):
         def assign(func):
             self.add_new_func(func, **kwargs)
