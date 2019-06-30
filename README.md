@@ -16,7 +16,7 @@ Currently the PyPi release of Banhammer.py has not been tested which is why we r
  - `pip install -r requirements.txt`
  
 ### Quick Example
-Now that the dependancies have been installed, it's time to create your bot! For that you'll need the general structure of a Discord `Client` or `Bot` (if you want to make use of the commands extension) and then add the bits for Banhammer.py to know what to do.
+Now that the dependencies have been installed, it's time to create your bot! For that you'll need the general structure of a Discord `Client` or `Bot` (if you want to make use of the commands extension) and then add the bits for Banhammer.py to know what to do.
 
 ```python
 import discord
@@ -50,7 +50,15 @@ bot.run(TOKEN)
 Make sure you don't forget to call `bh.run()` so that Banhammer can start the internal event loop. For more examples check out [Banhacker](https://github.com/Dan6erbond/Banhacker) as well as the [D6B](https://github.com/Dan6erbond/D6B) bot that both show different (and more complex) implementations of the framework.
 
 ## Contributing
-🚧👷‍♂️Work in progress!
+Banhammer.py is open-source! That means we'd love to see your contributions and hopefully be able to accept them in the next release. If you want to become a contributor, try to follow these rules to keep the code clean:
+ - Variable and file names must be written in snake-case. (i.e. `variable_name`)
+ - Class names must be pascal-case. (i.e. `ClassName`)
+ - Only use `async` where necessary.
+ - Use the OOP approach: create classes when it makes sense.
+ - Document as much as you can, preferably with inline comments.
+ - Use the Google Style docstring format.
+ - Store data in JSON, INI or YAML format to eliminate dependencies for other formats.
+ - Create an `__init__.py` file for sub-modules.
 
 ## Roadmap
  - [x] Returning actions performed.
