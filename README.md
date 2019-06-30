@@ -1,7 +1,7 @@
 # Banhammer.py
 By [Mariavi](https://dan6erbond.github.io/mariavi)
 
-Banhammer.py is a framework that allows you to build your very own Banhammer! _Banhammer_ is the concept that got Mariavi started and pursues the goal of bringing subreddit moderation to your very own Discord server. By streaming any and all moderatable items to Discord channels and allowing users to then moderate the subreddit through a joint bot account using **Reactions**, there's no need to use Reddit's moderation interface anymore!
+**Banhammer.py** is a framework that allows you to build your very own Banhammer! *Banhammer* is the concept that got Mariavi started and pursues the goal of bringing subreddit moderation to your very own Discord server. By streaming any and all moderatable items to Discord channels and allowing users to then moderate the subreddit through a joint bot account using **Reactions**, there's no need to use Reddit's moderation interface anymore!
 
 ## Features
  - Streaming new posts to Discord.
@@ -17,7 +17,13 @@ Banhammer.py is a framework that allows you to build your very own Banhammer! _B
 🚧👷‍♂️Work in progress!
 
 ## Roadmap
-🚧👷‍♂️Work in progress!
+ - [x] Returning actions performed.
+ - [ ] Better support for modmail.
+ - [ ] `MessageBuilder` object to create custom messages/embeds.
+ - [ ] `save()` function for `Subreddit` object.
+ - [ ] Support for newer PRAW features (such as locking comments).
+ - [ ] Validation of inputs.
+ - [ ] Better exception handling and outputs.
 
 ## Links
  - [Documentation](https://dan6erbond.github.io/mariavi/banhammer.py.html)
