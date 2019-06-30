@@ -19,8 +19,8 @@ Banhammer.py is a framework that allows you to build your very own Banhammer! _B
  - [Documentation](https://dan6erbond.github.io/mariavi/banhammer.py.html)
  - [Official Discord server](https://discordapp.com/invite/9JrGC8f)
  - [PyPi Release](https://pypi.org/project/banhammer.py/)
- - [Discord.py]()
- - []()
+ - [Discord.py](https://discordpy.readthedocs.io/en/latest)
+ - [PRAW](https://praw.readthedocs.io/en/latest)
  
 ### Contributors
 The awesome people that worked on this framework and its idea to make it a reality!
