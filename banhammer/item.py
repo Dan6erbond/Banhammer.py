@@ -83,6 +83,8 @@ def get_item_url(item):
         return "https://www.reddit.com/r/{}/comments/{}/_/{}".format(item.subreddit, item.submission, item)
     elif isinstance(item, praw.models.ModmailConversation):
         return "https://mod.reddit.com/mail/all/" + item.id
+    elif isinstance(item, praw.models.ModmailMessage):
+        return "https://mod.reddit.com/mail/all/" + item.conversation.id
     elif isinstance(item, praw.models.Message):
         if item.was_comment:
             return "https://www.reddit.com/r/{}/comments/{}/_/{}".format(item.subreddit, item.submission, item)
@@ -90,3 +92,4 @@ def get_item_url(item):
             return "https://www.reddit.com/message/messages/{}".format(item)
     elif isinstance(item, praw.models.Subreddit):
         return "https://www.reddit.com/r/" + item.display_name
+    return ""

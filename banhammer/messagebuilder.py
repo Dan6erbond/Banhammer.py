@@ -36,10 +36,7 @@ class MessageBuilder:
         else:
             title = "New action taken by /u/{} on /r/{}!".format(item.item.mod, item.item.subreddit)
 
-        url = discord.Embed.Empty if item.type not in ["submission", "comment"] else "https://www.reddit.com{}".format(
-            item.item.permalink)
-
-        embed.set_author(name=title, url=url)
+        embed.set_author(name=title, url=url if url != "" else discord.Embed.Empty)
 
         if item.type == "submission":
             embed.add_field(name="Title", value=item.item.title, inline=False)
