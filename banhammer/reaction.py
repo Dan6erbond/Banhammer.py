@@ -103,7 +103,7 @@ class Reaction:
 
         payload.feed(user, item, self.approve, self.reply)
 
-        if isinstance(item.item, praw.models.modmail.ModmailMessage):
+        if isinstance(item.item, praw.models.ModmailMessage):
             if self.archive:
                 item.item.conversation.archive()
                 payload.actions.append("archived")
