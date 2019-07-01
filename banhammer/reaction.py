@@ -43,8 +43,8 @@ class Reaction:
         self.mark_nsfw = dict["mark_nsfw"] if "mark_nsfw" in dict else mark_nsfw
         self.lock = dict["lock"] if "lock" in dict else lock
         self.reply = dict["reply"] if "reply" in dict else reply
-        self.distinguish_reply = dict["distinguish_reply"] if "distinguish_reply" in dict else distinguish_reply
 
+        self.distinguish_reply = dict["distinguish_reply"] if "distinguish_reply" in dict else distinguish_reply
         self.sticky_reply = dict["sticky_reply"] if "sticky_reply" in dict else sticky_reply
         if self.sticky_reply: self.distinguish_reply = True
 
@@ -103,7 +103,7 @@ class Reaction:
 
         payload.feed(user, item, self.approve, self.reply)
 
-        if isinstance(item.item, praw.models.modmail.ModmailMessage):
+        if isinstance(item.item, praw.models.ModmailMessage):
             if self.archive:
                 item.item.conversation.archive()
                 payload.actions.append("archived")

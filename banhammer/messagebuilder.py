@@ -1,5 +1,6 @@
 import discord
 
+
 class MessageBuilder:
     def get_item_message(self, item):
         if item.type in ["submission", "comment"]:
