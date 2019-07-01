@@ -36,6 +36,7 @@ class MessageBuilder:
         else:
             title = "New action taken by /u/{} on /r/{}!".format(item.item.mod, item.item.subreddit)
 
+        url = item.get_url()
         embed.set_author(name=title, url=url if url != "" else discord.Embed.Empty)
 
         if item.type == "submission":
