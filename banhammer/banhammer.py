@@ -2,17 +2,19 @@ import asyncio
 import json
 import os
 
+import inspect
 import discord
 
 from . import reddithelper
 from .subreddit import Subreddit
+from .messagebuilder import MessageBuilder
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
 
 
 class Banhammer:
 
-    def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple, change_presence=False):
+    def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple, change_presence=False, message_builder=MessageBuilder()):
         self.reddit = reddit
         self.subreddits = list()
         self.loop = asyncio.get_event_loop()
@@ -21,6 +23,8 @@ class Banhammer:
         self.action_funcs = list()
 
         self.loop_time = loop_time
+
+        self.message_builder = message_builder
         self.bot = bot
         self.embed_color = embed_color
         self.change_presence = change_presence
@@ -93,11 +97,12 @@ class Banhammer:
         self.add_items_func(func, "get_reports", **kwargs)
 
     def add_items_func(self, func, sub_func, **kwargs):
-        self.item_funcs.append({
-            "func": func,
-            "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
-            "sub_func": sub_func
-        })
+        if inspect.iscoroutinefunction(func):
+            self.item_funcs.append({
+                "func": func,
+                "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
+                "sub_func": sub_func
+            })
 
     async def send_items(self):
         while True:
@@ -128,12 +133,12 @@ class Banhammer:
         return assign
 
     def add_mod_actions_func(self, func, *args, **kwargs):
-        data = {
-            "func": func,
-            "mods": kwargs["mods"] if "mods" in kwargs else list(args),
-            "sub": kwargs["subreddit"] if "subreddit" in kwargs else None
-        }
-        self.action_funcs.append(data)
+        if inspect.iscoroutinefunction(func):
+            self.action_funcs.append({
+                "func": func,
+                "mods": kwargs["mods"] if "mods" in kwargs else list(args),
+                "sub": kwargs["subreddit"] if "subreddit" in kwargs else None
+            })
 
     async def send_actions(self):
         while True:

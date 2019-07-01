@@ -1,6 +1,3 @@
-import os
-
-import praw
 import prawcore
 
 from . import exceptions
@@ -12,12 +9,13 @@ class Subreddit:
 
     def __init__(self, bh, dict={}, subreddit="", stream_new=True, stream_comments=False, stream_reports=True,
                  stream_mail=True, stream_queue=True, stream_mod_actions=True):
-        self.bh = bh
+        self.banhammer = bh
         self.reddit = bh.reddit
 
         self.subreddit = dict["subreddit"] if "subreddit" in dict else subreddit
         if type(self.subreddit) != praw.models.Subreddit: self.subreddit = self.reddit.subreddit(str(self.subreddit))
-        if self.reddit.user.me() not in self.subreddit.moderator(): raise exceptions.NotModerator(self.reddit.user.me(), self)
+        if self.reddit.user.me() not in self.subreddit.moderator(): raise exceptions.NotModerator(self.reddit.user.me(),
+                                                                                                  self)
 
         self.name = self.subreddit.display_name.replace("r/", "").replace("/", "")
 
