@@ -2,6 +2,7 @@ import os
 
 import praw
 
+from . import exceptions
 from . import yaml
 
 
@@ -59,14 +60,14 @@ class Reaction:
 
         return dict
 
-    def handle(self, user, item=None):
+    def handle(self, user, item=None, payload=ReactionPayload()):
         if item is None and self.item is not None:
             item = self.item
         else:
-            return None  # Exception
+            raise exceptions.NoItemGiven()
 
         if not self.eligible(item.item):
-            return None  # Exception
+            raise exceptions.NotEligibleItem()
 
         item_type = item.type.title()
         actions = list()
