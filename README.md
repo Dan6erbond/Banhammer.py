@@ -48,7 +48,7 @@ async def handle_new(p):
 bot.run(TOKEN)
 ```
 
-`bh.run()` must be called so that Banhammer can start the internal event loop. More examples can be found on the [Banhacker](https://github.com/Dan6erbond/Banhacker) as well as the [D6B](https://github.com/Dan6erbond/D6B) GitHub repositories that both show different (and more complex) implementations of the framework.
+`bh.run()` must be called so that Banhammer can start the internal event loop. More examples can be found in the (examples)[examples] folder or in the [Banhacker](https://github.com/Dan6erbond/Banhacker) as well as the [D6B](https://github.com/Dan6erbond/D6B) GitHub repositories that both show different (and more complex) implementations of the framework.
 
 ## Contributing
 Banhammer.py is open-source! That means we'd love to see your contributions and hopefully be able to accept them in the next release. If you want to become a contributor, try to follow these rules to keep the code clean:
