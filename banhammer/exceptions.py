@@ -12,17 +12,17 @@ class NotModerator(BanhammerException):
 
 
 class NoRedditInstance(BanhammerException):
-    def __init__(self, sub):
-        super(NotModerator, self).__init__(
-            "No <praw.Reddit> instance was given to the Subreddit <banhammer.Subreddit({})>".format(sub))
+    def __init__(self):
+        super(NoRedditInstance, self).__init__(
+            "No <praw.Reddit> instance was given to the <banhammer.Subreddit> object.")
 
 
 class NoItemGiven(BanhammerException):
     def __init__(self):
-        super(NotModerator, self).__init__("No <banhammer.RedditItem> was given to the <banhammer.Reaction> instance.")
+        super(NoItemGiven, self).__init__("No <banhammer.RedditItem> was given to the <banhammer.Reaction> instance.")
 
 
 class NotEligibleItem(BanhammerException):
     def __init__(self):
-        super(NotModerator, self).__init__(
+        super(NotEligibleItem, self).__init__(
             "The <banhammer.RedditItem> given to the <banhammer.Reaction> object cannot be handled.")

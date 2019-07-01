@@ -7,13 +7,14 @@ import discord
 
 from . import reddithelper
 from .subreddit import Subreddit
+from .messagebuilder import MessageBuilder
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
 
 
 class Banhammer:
 
-    def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple, change_presence=False):
+    def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple, change_presence=False, message_builder=MessageBuilder()):
         self.reddit = reddit
         self.subreddits = list()
         self.loop = asyncio.get_event_loop()
@@ -22,6 +23,8 @@ class Banhammer:
         self.action_funcs = list()
 
         self.loop_time = loop_time
+
+        self.message_builder = message_builder
         self.bot = bot
         self.embed_color = embed_color
         self.change_presence = change_presence
