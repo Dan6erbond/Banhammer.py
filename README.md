@@ -63,12 +63,12 @@ Banhammer.py is open-source! That means we'd love to see your contributions and 
 
 ## Roadmap
  - [x] Returning actions performed.
- - [ ] Better support for modmail.
- - [ ] `MessageBuilder` object to create custom messages/embeds.
+ - [x] Improved support for modmail.
+ - [x] `MessageBuilder` object to create custom messages/embeds.
  - [ ] `save()` function for `Subreddit` object.
- - [ ] Support for newer PRAW features (such as locking comments).
+ - [x] Support for newer PRAW features (such as locking comments).
  - [ ] Validation of inputs.
- - [ ] Better exception handling and outputs.
+ - [x] Better exception handling and outputs.
  - [ ] Support for variable function arguments.
 
 ## Links
