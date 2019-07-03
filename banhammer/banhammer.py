@@ -1,20 +1,21 @@
 import asyncio
+import inspect
 import json
 import os
 
-import inspect
 import discord
 
 from . import reddithelper
-from .subreddit import Subreddit
 from .messagebuilder import MessageBuilder
+from .subreddit import Subreddit
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
 
 
 class Banhammer:
 
-    def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple, change_presence=False, message_builder=MessageBuilder()):
+    def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple,
+                 change_presence=False, message_builder=MessageBuilder()):
         self.reddit = reddit
         self.subreddits = list()
         self.loop = asyncio.get_event_loop()
@@ -121,7 +122,10 @@ class Banhammer:
                     for post in sub.get_data()[func["sub_func"]]():
                         await func["func"](post)
                     if self.bot is not None and self.change_presence:
-                        await self.bot.change_presence(activity=None)
+                        try:
+                            await self.bot.change_presence(activity=None)
+                        except Exception as e:
+                            print(e)
 
             await asyncio.sleep(self.loop_time)
 
@@ -157,7 +161,10 @@ class Banhammer:
                     for action in sub.get_mod_actions(func["mods"]):
                         await func["func"](action)
                     if self.bot is not None and self.change_presence:
-                        await self.bot.change_presence(activity=None)
+                        try:
+                            await self.bot.change_presence(activity=None)
+                        except Exception as e:
+                            print(e)
 
             await asyncio.sleep(self.loop_time)
 
