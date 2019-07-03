@@ -123,18 +123,8 @@ class Banhammer:
                 else:
                     subs.extend(self.subreddits)
                 for sub in subs:
-                    if self.bot is not None and self.change_presence:
-                        try:
-                            await self.bot.change_presence(activity=discord.Game("on /r/{}".format(sub)))
-                        except Exception as e:
-                            print(e)
                     for post in sub.get_data()[func["sub_func"]]():
                         await func["func"](post)
-                    if self.bot is not None and self.change_presence:
-                        try:
-                            await self.bot.change_presence(activity=None)
-                        except Exception as e:
-                            print(e)
 
             for func in self.action_funcs:
                 subs = list()
@@ -146,8 +136,6 @@ class Banhammer:
                 else:
                     subs.extend(self.subreddits)
                 for sub in subs:
-                    if self.bot is not None and self.change_presence:
-
                     for action in sub.get_mod_actions(func["mods"]):
                         await func["func"](action)
 
