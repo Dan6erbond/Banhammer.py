@@ -109,7 +109,8 @@ class Banhammer:
         while True:
             if self.bot is not None and self.change_presence:
                 try:
-                    await self.bot.change_presence(activity=discord.Game("Scanning subreddits"))
+                    watching = discord.Activity(type=discord.ActivityType.watching, name="Reddit")
+                    await self.bot.change_presence(activity=watching)
                 except Exception as e:
                     print(e)
 
