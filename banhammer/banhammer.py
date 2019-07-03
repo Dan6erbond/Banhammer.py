@@ -107,6 +107,12 @@ class Banhammer:
 
     async def send_items(self):
         while True:
+            if self.bot is not None and self.change_presence:
+                try:
+                    await self.bot.change_presence(activity=discord.Game("Scanning subreddits".format(sub)))
+                except Exception as e:
+                    print(e)
+
             for func in self.item_funcs:
                 subs = list()
                 if func["sub"] is not None:
@@ -118,7 +124,10 @@ class Banhammer:
                     subs.extend(self.subreddits)
                 for sub in subs:
                     if self.bot is not None and self.change_presence:
-                        await self.bot.change_presence(activity=discord.Game("on /r/{}".format(sub)))
+                        try:
+                            await self.bot.change_presence(activity=discord.Game("on /r/{}".format(sub)))
+                        except Exception as e:
+                            print(e)
                     for post in sub.get_data()[func["sub_func"]]():
                         await func["func"](post)
                     if self.bot is not None and self.change_presence:
@@ -126,6 +135,27 @@ class Banhammer:
                             await self.bot.change_presence(activity=None)
                         except Exception as e:
                             print(e)
+
+            for func in self.action_funcs:
+                subs = list()
+                if func["sub"] is not None:
+                    for sub in self.subreddits:
+                        if str(sub.subreddit).lower() == func["sub"].lower():
+                            subs.append(sub)
+                            break
+                else:
+                    subs.extend(self.subreddits)
+                for sub in subs:
+                    if self.bot is not None and self.change_presence:
+
+                    for action in sub.get_mod_actions(func["mods"]):
+                        await func["func"](action)
+
+            if self.bot is not None and self.change_presence:
+                try:
+                    await self.bot.change_presence(activity=None)
+                except Exception as e:
+                    print(e)
 
             await asyncio.sleep(self.loop_time)
 
@@ -143,30 +173,6 @@ class Banhammer:
                 "mods": kwargs["mods"] if "mods" in kwargs else list(args),
                 "sub": kwargs["subreddit"] if "subreddit" in kwargs else None
             })
-
-    async def send_actions(self):
-        while True:
-            for func in self.action_funcs:
-                subs = list()
-                if func["sub"] is not None:
-                    for sub in self.subreddits:
-                        if str(sub.subreddit).lower() == func["sub"].lower():
-                            subs.append(sub)
-                            break
-                else:
-                    subs.extend(self.subreddits)
-                for sub in subs:
-                    if self.bot is not None and self.change_presence:
-                        await self.bot.change_presence(activity=discord.Game("on /r/{}".format(sub)))
-                    for action in sub.get_mod_actions(func["mods"]):
-                        await func["func"](action)
-                    if self.bot is not None and self.change_presence:
-                        try:
-                            await self.bot.change_presence(activity=None)
-                        except Exception as e:
-                            print(e)
-
-            await asyncio.sleep(self.loop_time)
 
     def get_item(self, c):
         # Add this to use the embed's URL (if one is present):
@@ -193,6 +199,6 @@ class Banhammer:
         return embed
 
     def run(self):
-        if len(self.item_funcs) > 0: self.loop.create_task(self.send_items())
-        if len(self.action_funcs) > 0: self.loop.create_task(self.send_actions())
+        if len(self.item_funcs) > 0 or len(self.action_funcs) > 0:
+            self.loop.create_task(self.send_items())
         # self.loop.run_forever()
