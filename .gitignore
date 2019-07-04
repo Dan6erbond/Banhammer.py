@@ -112,8 +112,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# custom
 D6B.py
 discord.ini
 login.py
 files/
 praw.ini
+.idea
