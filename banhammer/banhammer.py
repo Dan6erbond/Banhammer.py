@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import json
 import os
+import re
 
 import discord
 
@@ -193,7 +194,9 @@ class Banhammer:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         with open(dir_path + "/welcome.txt") as f:
             print("")
-            print(f.read())
+            BOLD = '\033[1m'
+            END = '\033[0m'
+            print(re.sub(r"\*\*(.+)\*\*", r"{}\1{}".format(BOLD, END), f.read()))
             print("")
 
         if len(self.item_funcs) > 0 or len(self.action_funcs) > 0:

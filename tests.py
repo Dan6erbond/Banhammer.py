@@ -37,7 +37,7 @@ def run():
     print(item.is_removed())
     print(item.is_author_removed())
 
-    payload = item.get_reaction("✔").handle("Ravi", CustomPayload())
+    payload = item.get_reaction("✔").handle(CustomPayload("Ravi"))
     print(payload)
 
 

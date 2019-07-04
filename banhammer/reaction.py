@@ -7,9 +7,9 @@ from . import yaml
 
 class ReactionPayload:
 
-    def __init__(self):
+    def __init__(self, user="Banhammer"):
         self.item = None
-        self.user = "Banhammer"
+        self.user = user
         self.actions = list()
         self.approved = False
         self.reply = ""
@@ -18,6 +18,7 @@ class ReactionPayload:
         return self.get_message()
 
     def feed(self, user, item, approved, reply=""):
+        self.user = user
         self.item = item
         self.approved = approved
         self.reply = reply
@@ -150,7 +151,7 @@ class Reaction:
 
         return str
 
-    def handle(self, user, payload=ReactionPayload(), item=None):
+    def handle(self, payload=ReactionPayload(), user="", item=None):
         if item is None and self.item is not None:
             item = self.item
 
@@ -159,6 +160,8 @@ class Reaction:
 
         if not self.eligible(item.item):
             raise exceptions.NotEligibleItem()
+
+        user = user if user != "" else payload.user
 
         payload.feed(user, item, self.approve, self.reply)
 
