@@ -189,6 +189,12 @@ class Banhammer:
         return embed
 
     def run(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(dir_path + "/welcome.txt") as f:
+            print("")
+            print(f.read())
+            print("")
+
         if len(self.item_funcs) > 0 or len(self.action_funcs) > 0:
             self.loop.create_task(self.send_items())
         # self.loop.run_forever()
