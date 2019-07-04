@@ -7,6 +7,7 @@ import discord
 
 from . import reddithelper
 from .messagebuilder import MessageBuilder
+from .reaction import ReactionHandler
 from .subreddit import Subreddit
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
@@ -15,7 +16,7 @@ banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
 class Banhammer:
 
     def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple,
-                 change_presence=False, message_builder=MessageBuilder()):
+                 change_presence=False, message_builder=MessageBuilder(), reaction_handler=ReactionHandler()):
         self.reddit = reddit
         self.subreddits = list()
         self.loop = asyncio.get_event_loop()
@@ -26,6 +27,7 @@ class Banhammer:
         self.loop_time = loop_time
 
         self.message_builder = message_builder
+        self.reaction_handler = reaction_handler
         self.bot = bot
         self.embed_color = embed_color
         self.change_presence = change_presence
@@ -188,6 +190,12 @@ class Banhammer:
         return embed
 
     def run(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(dir_path + "/welcome.txt") as f:
+            print("")
+            print(f.read())
+            print("")
+
         if len(self.item_funcs) > 0 or len(self.action_funcs) > 0:
             self.loop.create_task(self.send_items())
         # self.loop.run_forever()
