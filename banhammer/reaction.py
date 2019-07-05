@@ -13,14 +13,15 @@ class ReactionPayload:
         self.actions = list()
         self.approved = False
         self.reply = ""
+        self.emoji = ""
 
     def __str__(self):
         return self.get_message()
 
-    def feed(self, user, item, approved, reply=""):
-        self.user = user
+    def feed(self, item, approved, user="", emoji="", reply=""):
         self.item = item
         self.approved = approved
+        if user != "": self.user = user
         self.reply = reply
 
     def get_message(self):
@@ -32,10 +33,10 @@ class ReactionPayload:
 
 class ReactionHandler:
 
-    def handle(self, reaction, user, item, payload):
-        return self.gen_handle(reaction, user, item, payload)
+    def handle(self, reaction, item, payload):
+        return self.gen_handle(reaction, item, payload)
 
-    def gen_handle(self, reaction, user, item, payload):
+    def gen_handle(self, reaction, item, payload):
         if isinstance(item.item, praw.models.ModmailMessage):
             if reaction.archive:
                 item.item.conversation.archive()
@@ -57,7 +58,7 @@ class ReactionHandler:
             item.item.mod.lock()
             payload.actions.append("locked")
 
-            payload.feed("Banhammer", item, False)
+            payload.feed(item, False, "Banhammer")
             return payload
 
         if reaction.approve:
@@ -161,11 +162,11 @@ class Reaction:
         if not self.eligible(item.item):
             raise exceptions.NotEligibleItem()
 
-        user = user if user != "" else payload.user
+        user = payload.user if user == "" else user
 
-        payload.feed(user, item, self.approve, self.reply)
+        payload.feed(item, self.approve, user, self.emoji, self.reply)
 
-        return item.subreddit.banhammer.reaction_handler.handle(self, user, item, payload)
+        return item.subreddit.banhammer.reaction_handler.handle(self, item, payload)
 
     def eligible(self, item):
         if isinstance(item, praw.models.Submission):
