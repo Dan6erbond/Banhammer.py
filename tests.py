@@ -12,7 +12,7 @@ class CustomPayload(ReactionPayload):
 
 
 class CustomHandler(ReactionHandler):
-    def handle(self, reaction, user, item, payload):
+    def handle(self, reaction, item, payload):
         payload.actions.append("test action")
         return payload
 
@@ -37,6 +37,8 @@ def run():
     print(item.is_removed())
     print(item.is_author_removed())
 
+    payload = item.get_reaction("✔").handle()
+    print(payload)
     payload = item.get_reaction("✔").handle(CustomPayload("Ravi"))
     print(payload)
 
