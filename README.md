@@ -72,7 +72,7 @@ Banhammer.py is open-source! That means we'd love to see your contributions and 
  - [ ] Support for variable function arguments.
 
 ## Links
- - [Documentation](https://dan6erbond.github.io/mariavi/banhammer.py.html)
+ - [Documentation](https://dan6erbond.github.io/mariavi/banhammer-py.html)
  - [Official Discord server](https://discordapp.com/invite/9JrGC8f)
  - [PyPi Release](https://pypi.org/project/banhammer.py/)
  - [Discord.py](https://discordpy.readthedocs.io/en/latest)
