@@ -1,23 +1,20 @@
 import praw
 
-from banhammer.banhammer import Banhammer
-from banhammer.messagebuilder import MessageBuilder
-from banhammer.reaction import ReactionPayload, ReactionHandler
-from banhammer.subreddit import Subreddit
+import banhammer
 
 
-class CustomPayload(ReactionPayload):
+class CustomPayload(banhammer.ReactionPayload):
     def get_message(self):
         return "I handled the submission '{0.title}' from /r/{0.subreddit}.".format(self.item.item)
 
 
-class CustomHandler(ReactionHandler):
+class CustomHandler(banhammer.ReactionHandler):
     def handle(self, reaction, item, payload):
         payload.actions.append("test action")
         return payload
 
 
-class CustomBuilder(MessageBuilder):
+class CustomBuilder(banhammer.MessageBuilder):
     def get_item_message(self, item):
         return "Item title: {}".format(item.item.title)
 
@@ -25,8 +22,8 @@ class CustomBuilder(MessageBuilder):
 def run():
     reddit = praw.Reddit("TBHB")
 
-    bh = Banhammer(reddit, message_builder=CustomBuilder(), reaction_handler=CustomHandler())
-    bh.add_subreddits(Subreddit(bh, subreddit="banhammerdemo"))
+    bh = banhammer.Banhammer(reddit, message_builder=CustomBuilder(), reaction_handler=CustomHandler())
+    bh.add_subreddits(banhammer.Subreddit(bh, subreddit="banhammerdemo"))
     bh.run()
 
     url = "https://www.reddit.com/r/banhammerdemo/comments/c66rdl"
