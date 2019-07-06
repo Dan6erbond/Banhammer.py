@@ -46,7 +46,7 @@ class Banhammer:
     def remove_subreddit(self, subreddit):
         subreddit = str(subreddit).lower().replace("r/", "").replace("/", "")
         for sub in self.subreddits:
-            sub = str(sub).lower().replace("r/", "").replace("/", ""
+            sub = str(sub).lower().replace("r/", "").replace("/", "")
             if sub == subreddit:
                 self.subreddits.remove(sub)
                 return True
