@@ -1,3 +1,5 @@
+import json
+
 import praw
 
 import banhammer
@@ -20,11 +22,15 @@ class CustomBuilder(banhammer.MessageBuilder):
 
 
 def run():
+    # doing something with JSON here so PyCharm doesn't remove the import
+    json.dumps({"sub": "banhammerdmeo"})
+    
     reddit = praw.Reddit("TBHB")
 
     bh = banhammer.Banhammer(reddit, message_builder=CustomBuilder(), reaction_handler=CustomHandler())
     bh.add_subreddits(banhammer.Subreddit(bh, subreddit="banhammerdemo"))
     bh.run()
+    # print(json.dumps(bh.get_reactions_embed().to_dict(), indent=4))
 
     url = "https://www.reddit.com/r/banhammerdemo/comments/c66rdl"
     item = bh.get_item(url)
