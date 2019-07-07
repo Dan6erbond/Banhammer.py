@@ -24,7 +24,7 @@ class CustomBuilder(banhammer.MessageBuilder):
 def run():
     # doing something with JSON here so PyCharm doesn't remove the import
     json.dumps({"sub": "banhammerdmeo"})
-    
+
     reddit = praw.Reddit("TBHB")
 
     bh = banhammer.Banhammer(reddit, message_builder=CustomBuilder(), reaction_handler=CustomHandler())
