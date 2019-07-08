@@ -60,6 +60,7 @@ def get_list(str):
     dicts = list()
     s = ""
     for line in str.splitlines():
+        line = strip(line)
         if line.startswith("-"):
             dicts.append(get_dict(s))
             s = ""
