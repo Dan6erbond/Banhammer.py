@@ -28,7 +28,11 @@ def run():
     reddit = praw.Reddit("TBHB")
 
     bh = banhammer.Banhammer(reddit, message_builder=CustomBuilder(), reaction_handler=CustomHandler())
-    bh.add_subreddits(banhammer.Subreddit(bh, subreddit="banhammerdemo"))
+
+    sub = banhammer.Subreddit(bh, subreddit="banhammerdemo")
+    sub.ignore_old()
+    bh.add_subreddits(sub)
+
     bh.run()
     # print(json.dumps(bh.get_reactions_embed().to_dict(), indent=4))
 

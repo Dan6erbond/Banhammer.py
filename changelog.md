@@ -6,3 +6,4 @@
  - Support for indents in YAML added to `banhammer.YAMLParser`.
  - Code clean-up, `__init__.py` pre-imports classes and scripts.
  - Improved efficiency by limiting repeitions of calling `Payload.feed()`.
+ - Added `Subreddit.ignore_old()`.
