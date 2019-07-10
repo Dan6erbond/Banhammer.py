@@ -24,10 +24,7 @@ def get_item_from_url(reddit, subreddits, url):
             try:
                 modmail = subreddit.subreddit.modmail(id)
                 if hasattr(modmail, "subject"):
-                    return {
-                        "item": modmail,
-                        "subreddit": subreddit
-                    }
+                    return RedditItem(modmail, subreddit, "url")
             except Exception as e:
                 print("{}: {}".format(type(e), e))
 
@@ -49,16 +46,14 @@ def get_item_from_url(reddit, subreddits, url):
     except:
         return None
 
-    sub = None
+
+    subreddit = None
     for sub in subreddits:
         if sub.subreddit.id == item.subreddit.id:
             subreddit = sub
             break
 
-    if subreddit is None:
-        return None
-
-    return RedditItem(item, sub, "url")
+    return RedditItem(item, subreddit, "url")
 
 
 def is_url(url):

@@ -21,3 +21,7 @@
     # permanent ban
     emoji: ☠
     ban: 0
+    --
+    # dismiss modmail
+    emoji: ✉
+    type: mail

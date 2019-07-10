@@ -7,3 +7,11 @@
  - Code clean-up, `__init__.py` pre-imports classes and scripts.
  - Improved efficiency by limiting repeitions of calling `Payload.feed()`.
  - Added `Subreddit.ignore_old()`.
+ 
+2019-07-10 v1.16.0
+
+**Changelog:**
+ - Improved support for modmail.
+ - "dismissed" automatically added to `ReactionPayload.actions` if empty.
+ - ✉ Default modmail reaction to dismiss.
+ - Fixed `RedditHelper.get_item_from_url()`.

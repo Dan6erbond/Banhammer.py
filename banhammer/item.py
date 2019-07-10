@@ -9,7 +9,8 @@ class RedditItem:
         self.item = item
         self.id = item.id
         self.type = "submission" if type(item) == praw.models.Submission else "comment" if type(
-            item) == praw.models.Comment else "modmail" if type(item) == praw.models.ModmailMessage else "mod action"
+            item) == praw.models.Comment else "modmail" if type(item) in [praw.models.ModmailMessage,
+                                                                          praw.models.ModmailConversation] else "mod action"
         self.subreddit = subreddit
         self.source = source
 
@@ -40,10 +41,14 @@ class RedditItem:
             removed = True
         return removed
 
+    def get_author(self):
+        return self.item.author if type(self.item) != praw.models.ModmailConversation else self.item.authors[0]
+
     def is_author_removed(self):
-        author_removed = self.item.author is None
+        author = self.get_author()
+        author_removed = author is None
         try:
-            name = self.item.author.name
+            name = author.name
         except:
             author_removed = True
         return author_removed
@@ -52,7 +57,7 @@ class RedditItem:
         if self.is_author_removed():
             return "[deleted]"
         else:
-            return self.item.author.name
+            return self.get_author().name
 
     def get_reactions(self):
         reactions = self.subreddit.get_reactions(self.item)

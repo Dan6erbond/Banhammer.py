@@ -25,6 +25,7 @@ class ReactionPayload:
         self.reply = reply
 
     def get_message(self):
+        if len(self.actions) == 0: self.actions.append("dismissed")
         return "**{} {} by {}!**\n\n" \
                "{} by /u/{}:\n\n" \
                "{}".format(self.item.type.title(), " and ".join(self.actions), self.user,
@@ -37,15 +38,16 @@ class ReactionHandler:
         return self.gen_handle(reaction, item, payload)
 
     def gen_handle(self, reaction, item, payload):
-        if isinstance(item.item, praw.models.ModmailMessage):
+        if type(item.item) in [praw.models.ModmailMessage, praw.models.ModmailConversation]:
+            conversation = item.item.conversation if isinstance(item, praw.models.ModmailMessage) else item.item
             if reaction.archive:
-                item.item.conversation.archive()
+                conversation.archive()
                 payload.actions.append("archived")
             if reaction.mute:
-                item.item.conversation.mute()
+                conversation.mute()
                 payload.actions.append("muted")
             if reaction.reply != "":
-                item.item.conversation.reply(reaction.reply)
+                conversation.reply(reaction.reply)
                 payload.actions.append("replied to")
             return payload
 
@@ -175,7 +177,7 @@ class Reaction:
         elif isinstance(item, praw.models.Comment):
             if self.type == "" or self.type == "comment":
                 return True
-        elif isinstance(item, praw.models.ModmailMessage):
+        elif type(item) in [praw.models.ModmailMessage, praw.models.ModmailConversation]:
             if self.type == "mail":
                 return True
         return False
