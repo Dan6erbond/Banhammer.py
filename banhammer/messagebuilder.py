@@ -1,5 +1,7 @@
 import discord
 
+from .config import BOT_DISCLAIMER
+
 
 class MessageBuilder:
     def get_item_message(self, item):
@@ -58,3 +60,10 @@ class MessageBuilder:
             embed.description = "Action: `{}`".format(item.item.action)
 
         return embed
+
+    def get_ban_message(self, item, ban_duration):
+        ban_type = "permanent" if ban_duration == 0 else "temporary"
+        disclaimer = BOT_DISCLAIMER.format(item.subreddit.get_contact_url())
+        return "Our moderator team has reviewed [this post]({}) and decided to give you a {} ban. " \
+               "If you wish to appeal this ban, please respond to this message.\n\n{}".format(item.get_url(),
+                                                                                              ban_type, disclaimer)

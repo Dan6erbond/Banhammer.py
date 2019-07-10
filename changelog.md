@@ -15,3 +15,12 @@
  - "dismissed" automatically added to `ReactionPayload.actions` if empty.
  - ✉ Default modmail reaction to dismiss.
  - Fixed `RedditHelper.get_item_from_url()`.
+ 
+2019-07-10 v1.17.0
+
+**Changelog:**
+ - Moved package information to `config.py`.
+ - Added `Config.BOT_VERSION_TEXT`, `BOT_FOOTER` and `BOT_DISCLAIMER`.
+ - Added `MessageBuilder.get_ban_message()`.
+ - Fixed banning users in `banhammer.ReactionHandler`.
+ - Added `Subreddit.get_contact_url()`.

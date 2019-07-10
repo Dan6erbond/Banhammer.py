@@ -91,16 +91,15 @@ class ReactionHandler:
             payload.actions.append("replied to")
 
         if isinstance(reaction.ban, int):
+            ban_message = item.subreddit.banhammer.message_builder.get_ban_message(item, reaction.ban)
             if reaction.ban == 0:
                 item.item.subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules",
-                                               ban_message=formatter.format_ban_message(item.item, reaction.ban),
-                                               note="Bot Ban")
+                                               ban_message=ban_message, note="Banhammer Ban")
                 payload.actions.append("/u/" + item.item.author.name + " permanently banned")
             else:
                 item.item.subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules",
-                                               duration=reaction.ban,
-                                               ban_message=formatter.format_ban_message(item.item, reaction.ban),
-                                               note="Bot Ban")
+                                               duration=reaction.ban, ban_message=ban_message,
+                                               note="Banhammer Ban")
                 payload.actions.append("/u/{} banned for {} day(s)".format(item.item.author.name, reaction.ban))
 
         item.remove("files/{}_reports.txt".format(item.subreddit.subreddit.id))

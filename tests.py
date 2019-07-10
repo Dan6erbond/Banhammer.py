@@ -27,7 +27,7 @@ def run():
 
     reddit = praw.Reddit("TBHB")
 
-    bh = banhammer.Banhammer(reddit, message_builder=CustomBuilder(), reaction_handler=CustomHandler())
+    bh = banhammer.Banhammer(reddit, message_builder=CustomBuilder())
 
     sub = banhammer.Subreddit(bh, subreddit="banhammerdemo")
     sub.ignore_old()
@@ -39,10 +39,16 @@ def run():
     url = "https://www.reddit.com/r/banhammerdemo/comments/c66rdl"
     item = bh.get_item(url)
 
+    print()
+    print(bh.message_builder.get_ban_message(item, 12))
+    print()
+
     print(item)
     # print(json.dumps(item.get_embed().to_dict(), indent=4))
-    print(item.is_removed())
-    print(item.is_author_removed())
+    print()
+    print("Item removed:", item.is_removed())
+    print("Item author removed:", item.is_author_removed())
+    print()
 
     payload = item.get_reaction("✔").handle()
     print(payload)

@@ -44,6 +44,9 @@ class Subreddit:
 
         return str
 
+    def get_contact_url(self):
+        return "https://www.reddit.com/message/compose/?to=/r/" + self.subreddit.display_name
+
     def setup(self):
         if self.subreddit.quarantine:
             self.subreddit.quaran.opt_in()
