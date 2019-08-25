@@ -60,6 +60,7 @@ Banhammer.py is open-source! That means we'd love to see your contributions and 
  - Use the Google Style docstring format.
  - Store data in JSON, INI or YAML format to eliminate dependencies for other formats.
  - Create an `__init__.py` file for sub-modules.
+ - Don't use f-strings as they aren't supported in older versions of Python.
 
 ## Roadmap
  - [x] Returning actions performed.
