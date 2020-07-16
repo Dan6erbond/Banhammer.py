@@ -7,26 +7,25 @@ from .item import *
 
 class Subreddit:
 
-    def __init__(self, bh, dict={}, subreddit="", stream_new=True, stream_comments=False, stream_reports=True,
-                 stream_mail=True, stream_queue=True, stream_mod_actions=True, custom_emotes=True):
+    def __init__(self, bh, **opts):
         self.banhammer = bh
         self.reddit = bh.reddit
 
-        self.subreddit = dict["subreddit"] if "subreddit" in dict else subreddit
+        self.subreddit = opts["subreddit"] if "subreddit" in opts else ""
         if type(self.subreddit) != praw.models.Subreddit: self.subreddit = self.reddit.subreddit(str(self.subreddit))
         if self.reddit.user.me() not in self.subreddit.moderator(): raise exceptions.NotModerator(self.reddit.user.me(),
                                                                                                   self)
 
         self.name = self.subreddit.display_name.replace("r/", "").replace("/", "")
 
-        self.stream_new = dict["stream_new"] if "stream_new" in dict else stream_new
-        self.stream_comments = dict["stream_comments"] if "stream_comments" in dict else stream_comments
-        self.stream_reports = dict["stream_reports"] if "stream_reports" in dict else stream_reports
-        self.stream_mail = dict["stream_mail"] if "stream_mail" in dict else stream_mail
-        self.stream_queue = dict["stream_queue"] if "stream_queue" in dict else stream_queue
-        self.stream_mod_actions = dict["stream_mod_actions"] if "stream_mod_actions" in dict else stream_mod_actions
+        self.stream_new = opts["stream_new"] if "stream_new" in opts else True
+        self.stream_comments = opts["stream_comments"] if "stream_comments" in opts else False
+        self.stream_reports = opts["stream_reports"] if "stream_reports" in opts else True
+        self.stream_mail = opts["stream_mail"] if "stream_mail" in opts else True
+        self.stream_queue = opts["stream_queue"] if "stream_queue" in opts else True
+        self.stream_mod_actions = opts["stream_mod_actions"] if "stream_mod_actions" in opts else True
 
-        self.custom_emotes = dict["custom_emotes"] if "custom_emotes" in dict else custom_emotes
+        self.custom_emotes = opts["custom_emotes"] if "custom_emotes" in opts else True
         self.reactions = list()
         self.load_reactions()
 

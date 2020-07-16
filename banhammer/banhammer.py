@@ -41,6 +41,7 @@ class Banhammer:
             if type(sub) != Subreddit:
                 sub = Subreddit(self, subreddit=str(sub))
                 sub.setup()
+                sub.ignore_old()
             self.subreddits.append(sub)
 
     def remove_subreddit(self, subreddit):
