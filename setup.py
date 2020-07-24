@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf8") as f:
     long_description = f.read()
 
 setuptools.setup(
-    name="banhammer.py",
+    name="Banhammer.py",
     version="{}-{}".format(__version__, __tag__) if __tag__ else __version__,
     license=__license__,
     author=__author__,
