@@ -1,6 +1,6 @@
 # Banhammer.py
 
-[![PyPi version](https://img.shields.io/pypi/v/Banhammer.py?style=flat-square)](https://pypi.org/projectBanhammer.py/)
+[![PyPi version](https://img.shields.io/pypi/v/Banhammer.py?style=flat-square)](https://pypi.org/project/Banhammer.py/)
 ![PyPi License](https://img.shields.io/pypi/l/Banhammer.py?style=flat-square)
 ![PyPi Python Versions](https://img.shields.io/pypi/pyversions/banhammer.py?style=flat-square)
 [![Banhammer Discord](https://img.shields.io/discord/721693929195569172?color=7289da&label=Discord&logo=discord&style=flat-square)](https://discord.gg/9JrGC8f)
