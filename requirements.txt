@@ -1,3 +1,4 @@
 discord.py>=1.1.1
-praw>=6.2.0
-apraw>=0.5.3a0
+apraw>=0.6.6a0
+pytest>=5.4.3
+pytest-asyncio>=0.14.0

@@ -1,23 +1,22 @@
 import asyncio
-import inspect
 import json
 import os
 import re
 
+import apraw
 import discord
+from apraw.utils import ExponentialCounter
 
-from . import reddithelper
-from .messagebuilder import MessageBuilder
-from .reaction import ReactionHandler
-from .subreddit import Subreddit
+from .models import MessageBuilder, ReactionHandler, Subreddit
+from .utils import reddit_helper
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
 
 
 class Banhammer:
 
-    def __init__(self, reddit, loop_time=5 * 60, bot=None, embed_color=banhammer_purple,
-                 change_presence=False, message_builder=MessageBuilder(), reaction_handler=ReactionHandler()):
+    def __init__(self, reddit: apraw.Reddit, max_loop_time: int = 16, bot: discord.Client = None, embed_color: discord.Colour = banhammer_purple,
+                 change_presence: bool = False, message_builder: MessageBuilder = MessageBuilder(), reaction_handler: ReactionHandler = ReactionHandler()):
         self.reddit = reddit
         self.subreddits = list()
         self.loop = asyncio.get_event_loop()
@@ -25,7 +24,7 @@ class Banhammer:
         self.item_funcs = list()
         self.action_funcs = list()
 
-        self.loop_time = loop_time
+        self.max_loop_time = max_loop_time
 
         self.message_builder = message_builder
         self.reaction_handler = reaction_handler
@@ -33,15 +32,11 @@ class Banhammer:
         self.embed_color = embed_color
         self.change_presence = change_presence
 
-        if not os.path.exists("files"):
-            os.mkdir("files")
-
-    def add_subreddits(self, *subs):
+    async def add_subreddits(self, *subs):
         for sub in subs:
-            if type(sub) != Subreddit:
+            if not isinstance(sub, Subreddit):
                 sub = Subreddit(self, subreddit=str(sub))
-                sub.setup()
-                sub.ignore_old()
+                await sub.load_reactions()
             self.subreddits.append(sub)
 
     def remove_subreddit(self, subreddit):
@@ -104,7 +99,7 @@ class Banhammer:
         self.add_items_func(func, "get_reports", **kwargs)
 
     def add_items_func(self, func, sub_func, **kwargs):
-        if inspect.iscoroutinefunction(func):
+        if asyncio.iscoroutinefunction(func):
             self.item_funcs.append({
                 "func": func,
                 "sub": kwargs["subreddit"] if "subreddit" in kwargs else None,
@@ -112,8 +107,12 @@ class Banhammer:
             })
 
     async def send_items(self):
+        counter = ExponentialCounter(self.max_loop_time)
+
         while True:
-            if self.bot is not None and self.change_presence:
+            found = False
+
+            if self.bot and self.change_presence:
                 try:
                     watching = discord.Activity(type=discord.ActivityType.watching, name="Reddit")
                     await self.bot.change_presence(activity=watching)
@@ -122,7 +121,7 @@ class Banhammer:
 
             for func in self.item_funcs:
                 subs = list()
-                if func["sub"] is not None:
+                if func["sub"]:
                     for sub in self.subreddits:
                         if str(sub.subreddit).lower() == func["sub"].lower():
                             subs.append(sub)
@@ -130,12 +129,15 @@ class Banhammer:
                 else:
                     subs.extend(self.subreddits)
                 for sub in subs:
-                    for post in sub.get_data()[func["sub_func"]]():
+                    sub_func = getattr(sub, func["sub_func"])
+                    async for post in sub_func():
+                        if not found:
+                            found = True
                         await func["func"](post)
 
             for func in self.action_funcs:
                 subs = list()
-                if func["sub"] is not None:
+                if func["sub"]:
                     for sub in self.subreddits:
                         if str(sub.subreddit).lower() == func["sub"].lower():
                             subs.append(sub)
@@ -143,7 +145,9 @@ class Banhammer:
                 else:
                     subs.extend(self.subreddits)
                 for sub in subs:
-                    for action in sub.get_mod_actions(func["mods"]):
+                    async for action in sub.get_mod_actions(func["mods"]):
+                        if not found:
+                            found = True
                         await func["func"](action)
 
             if self.bot is not None and self.change_presence:
@@ -152,7 +156,12 @@ class Banhammer:
                 except Exception as e:
                     print(e)
 
-            await asyncio.sleep(self.loop_time)
+            if not found:
+                wait_time = counter.count()
+            else:
+                wait_time = counter.reset()
+
+            await asyncio.sleep(wait_time)
 
     def mod_actions(self, *args, **kwargs):
         def assign(func):
@@ -162,27 +171,26 @@ class Banhammer:
         return assign
 
     def add_mod_actions_func(self, func, *args, **kwargs):
-        if inspect.iscoroutinefunction(func):
+        if asyncio.iscoroutinefunction(func):
             self.action_funcs.append({
                 "func": func,
                 "mods": kwargs["mods"] if "mods" in kwargs else list(args),
                 "sub": kwargs["subreddit"] if "subreddit" in kwargs else None
             })
 
-    def get_item(self, c):
-        # Add this to use the embed's URL (if one is present):
-        # else c.author.url if c.author != discord.Empty and c.author.url != discord.Embed.Empty
-        s = str(c) if type(c) != discord.Embed else json.dumps(c.to_dict())
-        return reddithelper.get_item(self.reddit, self.subreddits, s)
+    async def get_item(self, c):
+        s = str(c) if not isinstance(c, discord.Embed) else json.dumps(c.to_dict())
+        return await reddit_helper.get_item(self.reddit, self.subreddits, s)
 
     def get_reactions_embed(self):
         embed = discord.Embed(
             colour=self.embed_color
         )
         embed.title = "Configured reactions"
-        for sub in self.subreddits: embed.add_field(name="/r/" + str(sub),
-                                                    value="\n".join([str(r) for r in sub.reactions]),
-                                                    inline=False)
+        for sub in self.subreddits:
+            embed.add_field(name="/r/" + str(sub),
+                            value="\n".join([str(r) for r in sub.reactions]),
+                            inline=False)
         return embed
 
     def get_subreddits_embed(self):
@@ -195,7 +203,7 @@ class Banhammer:
 
     def run(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(dir_path + "/welcome.txt") as f:
+        with open(dir_path + "/WELCOME.md") as f:
             print("")
             BOLD = '\033[1m'
             END = '\033[0m'
@@ -204,4 +212,3 @@ class Banhammer:
 
         if len(self.item_funcs) > 0 or len(self.action_funcs) > 0:
             self.loop.create_task(self.send_items())
-        # self.loop.run_forever()

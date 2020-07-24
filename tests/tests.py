@@ -6,12 +6,12 @@ import banhammer
 
 
 class CustomPayload(banhammer.ReactionPayload):
-    def get_message(self):
+    async def get_message(self):
         return "I handled the submission '{0.title}' from /r/{0.subreddit}.".format(self.item.item)
 
 
 class CustomHandler(banhammer.ReactionHandler):
-    def handle(self, reaction, item, payload):
+    async def handle(self, reaction, item, payload):
         payload.actions.append("test action")
         return payload
 
@@ -46,13 +46,15 @@ def run():
     print(item)
     # print(json.dumps(item.get_embed().to_dict(), indent=4))
     print()
-    print("Item removed:", item.is_removed())
+    print("Item removed:", item.removed)
     print("Item author removed:", item.is_author_removed())
     print()
 
-    payload = item.get_reaction("✔").handle()
+    reaction = await item.get_reaction("✔")
+    payload = await reaction.handle()
     print(payload)
-    payload = item.get_reaction("✔").handle(CustomPayload("Ravi"))
+    reaction = await item.get_reaction("✔")
+    payload = await reaction.handle(CustomPayload("Ravi"))
     print(payload)
 
 
