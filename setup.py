@@ -20,7 +20,7 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         'discord.py>=1.1.1',
-        'apraw>=0.6.0a0'
+        'apraw>=0.6.6a0'
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
