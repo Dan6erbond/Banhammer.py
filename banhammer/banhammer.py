@@ -197,7 +197,7 @@ class Banhammer:
             colour=self.embed_color
         )
         embed.title = "Subreddits' statuses"
-        embed.description = "\n".join([s.get_status() for s in self.subreddits])
+        embed.description = "\n".join([s.status for s in self.subreddits])
         return embed
 
     def run(self):
