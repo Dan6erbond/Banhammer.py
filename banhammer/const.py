@@ -5,7 +5,7 @@ __copyright__ = "© Copyright 2020 Dan6erbond"
 __version__ = "2.2.1"
 __tag__ = "beta"
 
-BOT_VERSION_TEXT = "Banhammer.py v" + "{}-{}".format(__version__, __tag__) if __tag__ else __version__
+BOT_VERSION_TEXT = "Banhammer.py v" + f"{__version__}-{__tag__}" if __tag__ else __version__
 
 BOT_FOOTER = f"^({BOT_VERSION_TEXT} | /r/TheBanhammerBot | Join us on) ^[Discord](https://discord.gg/9JrGC8f)"
 BOT_DISCLAIMER = "*This action was performed by the users of the [Banhammer.py](https://www.github.com/Dan6erbond/Banhammer.py) framework. " \
