@@ -41,8 +41,8 @@ class Subreddit:
 
         self.custom_emotes = opts.get("custom_emotes", True)
 
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(dir_path + "/reactions.yaml", encoding="utf8") as f:
+        path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "reactions.yaml"))
+        with open(path, encoding="utf8") as f:
             content = f.read()
             self.reactions = reaction.get_reactions(content)["reactions"]
 
@@ -95,10 +95,10 @@ class Subreddit:
                 print(e)
 
         if not loaded:
-            dir_path = os.path.dirname(os.path.realpath(__file__))
-            with open(dir_path + "/reactions.yaml", encoding="utf8") as f:
+            path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "reactions.yaml"))
+            with open(path, encoding="utf8") as f:
                 try:
-                    subreddit.wiki.create("banhammer-reactions", content=f.read(), reason="Reactions not found")
+                    await subreddit.wiki.create("banhammer-reactions", f.read(), "Reactions not found")
                 except Exception as e:
                     print(e)
 
@@ -114,6 +114,8 @@ class Subreddit:
         subreddit = await self.get_subreddit()
         submissions = [s async for s in subreddit.new()]
         for submission in reversed(submissions):
+            if not submission:
+                continue
             if submission.id in self._new_ids:
                 continue
 
@@ -127,8 +129,10 @@ class Subreddit:
 
     async def get_comments(self):
         subreddit = await self.get_subreddit()
-        comments = [s async for s in subreddit.comments(limit=250 if not self._skip_comments else 100)]
+        comments = [s async for s in subreddit.comments()]
         for comment in reversed(comments):
+            if not comment:
+                continue
             if comment.id in self._comment_ids:
                 continue
 
@@ -144,6 +148,8 @@ class Subreddit:
         subreddit = await self.get_subreddit()
         items = [s async for s in subreddit.mod.reports()]
         for item in reversed(items):
+            if not item:
+                continue
             if item.id in self._report_ids:
                 continue
 
@@ -160,6 +166,8 @@ class Subreddit:
         conversations = [s async for s in subreddit.modmail.conversations()]
         for conversation in reversed(conversations):
             async for message in conversation.messages():
+                if not message:
+                    continue
                 if message.id in self._mail_ids:
                     continue
 
@@ -175,6 +183,8 @@ class Subreddit:
         subreddit = await self.get_subreddit()
         items = [s async for s in subreddit.mod.modqueue()]
         for item in reversed(items):
+            if not item:
+                continue
             if item.id in self._queue_ids:
                 continue
 
@@ -189,7 +199,7 @@ class Subreddit:
     async def get_mod_actions(self, mods: List[str] = list()):
         subreddit = await self.get_subreddit()
         mods = [m.lower() for m in mods]
-        actions = [s async for s in subreddit.mod.log(limit=None if not self._skip_mod_actions else 100)]
+        actions = [s async for s in subreddit.mod.log()]
         for action in reversed(actions):
             if not action:
                 continue
