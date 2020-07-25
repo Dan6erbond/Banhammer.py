@@ -46,17 +46,21 @@ async def get_item_from_url(reddit: apraw.Reddit, subreddits, url):
             logger.error(e)
             return None
 
-    item_subreddit = await item.subreddit()
+    try:
+        item_subreddit = await item.subreddit()
+    except Exception as e:
+        logger.error(e)
+        return None
+    else:
+        subreddit = None
+        for sub in subreddits:
+            s = await sub.get_subreddit()
+            if s.id == item_subreddit.id:
+                subreddit = sub
+                break
 
-    subreddit = None
-    for sub in subreddits:
-        s = await sub.get_subreddit()
-        if s.id == item_subreddit.id:
-            subreddit = sub
-            break
-
-    if subreddit:
-        return RedditItem(item, subreddit, "url")
+        if subreddit:
+            return RedditItem(item, subreddit, "url")
 
 
 def is_url(url):
