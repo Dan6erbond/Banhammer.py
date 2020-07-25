@@ -52,56 +52,56 @@ class Banhammer:
         return False
 
     def new(self, **kwargs):
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_new_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_new_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_new_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         self.add_items_func(func, "get_new", **kwargs)
 
     def comments(self, **kwargs):
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_comments_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_comments_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_comments_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         self.add_items_func(func, "get_comments", **kwargs)
 
     def mail(self, **kwargs):
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_mail_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_mail_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_mail_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         self.add_items_func(func, "get_mail", **kwargs)
 
     def queue(self, **kwargs):
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_queue_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_queue_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_queue_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         self.add_items_func(func, "get_queue", **kwargs)
 
     def reports(self, **kwargs):
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_report_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_report_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_report_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         self.add_items_func(func, "get_reports", **kwargs)
 
-    def add_items_func(self, func: Callable[RedditItem, Awaitable[None]], sub_func: str, **kwargs):
+    def add_items_func(self, func: Callable[[RedditItem], Awaitable[None]], sub_func: str, **kwargs):
         if asyncio.iscoroutinefunction(func):
             self.item_funcs.append({
                 "func": func,
@@ -163,13 +163,13 @@ class Banhammer:
             await asyncio.sleep(wait_time)
 
     def mod_actions(self, *args, **kwargs):
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_mod_actions_func(func, *args, **kwargs)
             return func
 
         return assign
 
-    def add_mod_actions_func(self, func: Callable[RedditItem, Awaitable[None]], *args, **kwargs):
+    def add_mod_actions_func(self, func: Callable[[RedditItem], Awaitable[None]], *args, **kwargs):
         if asyncio.iscoroutinefunction(func):
             self.action_funcs.append({
                 "func": func,
