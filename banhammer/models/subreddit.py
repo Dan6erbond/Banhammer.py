@@ -98,7 +98,7 @@ class Subreddit:
                     self.reactions = reacts
                     loaded = True
             except Exception as e:
-                logger.error(e)
+                logger.error(f"Couldn't load wikipage: {e}")
 
         if not loaded:
             path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "reactions.yaml"))
@@ -106,7 +106,7 @@ class Subreddit:
                 try:
                     await subreddit.wiki.create("banhammer-reactions", f.read(), "Reactions not found")
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Couldn't create wikipage: {e}")
 
     def get_reactions(self, item: RedditItem):
         return [r for r in self.reactions if r.eligible(item)]

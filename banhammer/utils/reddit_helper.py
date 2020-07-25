@@ -31,7 +31,7 @@ async def get_item_from_url(reddit: apraw.Reddit, subreddits, url):
                 if hasattr(modmail, "subject"):
                     return RedditItem(modmail, subreddit, "url")
             except Exception as e:
-                logger.error(e)
+                logger.error(f"Failed to fetch modmail by ID '{id}': {e}")
 
         return None
 
@@ -39,17 +39,17 @@ async def get_item_from_url(reddit: apraw.Reddit, subreddits, url):
     try:
         item = await reddit.comment(url=url)
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Failed to fetch comment by URL '{url}': {e}")
         try:
             item = await reddit.submission(url=url)
         except Exception as e:
-            logger.error(e)
+            logger.error(f"Failed to fetch submission by URL '{url}': {e}")
             return None
 
     try:
         item_subreddit = await item.subreddit()
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Failed to retrieve item {item} subreddit: {e}")
         return None
     else:
         subreddit = None

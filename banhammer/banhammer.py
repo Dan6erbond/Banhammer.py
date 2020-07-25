@@ -120,7 +120,7 @@ class Banhammer:
                     watching = discord.Activity(type=discord.ActivityType.watching, name="Reddit")
                     await self.bot.change_presence(activity=watching)
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Failed to change bot presence: {e}")
 
             for func in self.item_funcs:
                 if func["sub"]:
@@ -134,7 +134,7 @@ class Banhammer:
                             found = True
                             await func["func"](post)
                     except Exception as e:
-                        logger.error(e)
+                        logger.error(f"Failed to retrieve post from {func['sub_func']} in {sub}: {e}")
 
             for func in self.action_funcs:
                 if func["sub"]:
@@ -147,13 +147,13 @@ class Banhammer:
                             found = True
                             await func["func"](action)
                     except Exception as e:
-                        logger.error(e)
+                        logger.error(f"Failed to retrieve mod action from {sub}: {e}")
 
             if self.bot is not None and self.change_presence:
                 try:
                     await self.bot.change_presence(activity=None)
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Failed to change bot presence: {e}")
 
             if not found:
                 wait_time = counter.count()
