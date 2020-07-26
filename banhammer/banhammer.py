@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os
 import re
 from typing import Awaitable, Callable, Union
@@ -9,11 +8,11 @@ import apraw
 import discord
 from apraw.utils import ExponentialCounter
 
+from .const import logger
 from .models import MessageBuilder, ReactionHandler, RedditItem, Subreddit
 from .utils import reddit_helper
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
-logger = logging.getLogger("banhammer")
 
 
 class Banhammer:
@@ -120,7 +119,7 @@ class Banhammer:
                     watching = discord.Activity(type=discord.ActivityType.watching, name="Reddit")
                     await self.bot.change_presence(activity=watching)
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Failed to change bot presence: {e}")
 
             for func in self.item_funcs:
                 if func["sub"]:
@@ -134,7 +133,7 @@ class Banhammer:
                             found = True
                             await func["func"](post)
                     except Exception as e:
-                        logger.error(e)
+                        logger.error(f"Failed to retrieve post from {func['sub_func']} in {sub}: {e}")
 
             for func in self.action_funcs:
                 if func["sub"]:
@@ -147,13 +146,13 @@ class Banhammer:
                             found = True
                             await func["func"](action)
                     except Exception as e:
-                        logger.error(e)
+                        logger.error(f"Failed to retrieve mod action from {sub}: {e}")
 
             if self.bot is not None and self.change_presence:
                 try:
                     await self.bot.change_presence(activity=None)
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Failed to change bot presence: {e}")
 
             if not found:
                 wait_time = counter.count()

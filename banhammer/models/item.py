@@ -1,4 +1,3 @@
-import logging
 from typing import TYPE_CHECKING, Union
 
 import apraw
@@ -6,10 +5,11 @@ import discord
 from apraw.models import (Comment, Message, ModmailConversation,
                           ModmailMessage, Submission, Subreddit)
 
+from ..const import logger
+
 if TYPE_CHECKING:
     from .subreddit import Subreddit
 
-logger = logging.getLogger("banhammer")
 
 
 class RedditItem:
@@ -38,7 +38,7 @@ class RedditItem:
                 try:
                     self._author = await self.item.author()
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Failed to retrieve item author in {self.item}: {e}")
             else:
                 self._author = self.item.authors[0]
         return self._author
@@ -67,7 +67,7 @@ class RedditItem:
             try:
                 await message.add_reaction(r.emoji)
             except Exception as e:
-                logger.error(e)
+                logger.error(f"Failed to add reaction '{r.emoji}': {e}")
                 continue
 
     def get_reaction(self, emoji: str):
