@@ -53,7 +53,8 @@ class Subreddit:
     def __str__(self):
         return self.name
 
-    def get_status(self):
+    @property
+    def status(self):
         str = "/r/" + self.name
 
         if self.stream_new:
