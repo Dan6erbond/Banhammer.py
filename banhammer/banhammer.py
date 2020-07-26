@@ -124,7 +124,7 @@ class Banhammer:
 
         Parameters
         ----------
-        func : Callable[RedditItem, Awaitable[None]]
+        func : Callable[[RedditItem], Awaitable[None]]
             The function that will be called when new posts are made.
         subreddit : str or Subreddit
             The subreddit to poll with this function.
@@ -155,7 +155,7 @@ class Banhammer:
 
         Parameters
         ----------
-        func : Callable[RedditItem, Awaitable[None]]
+        func : Callable[[RedditItem], Awaitable[None]]
             The function that will be called when comments are made.
         subreddit : str or Subreddit
             The subreddit to poll with this function.
@@ -186,7 +186,7 @@ class Banhammer:
 
         Parameters
         ----------
-        func : Callable[RedditItem, Awaitable[None]]
+        func : Callable[[RedditItem], Awaitable[None]]
             The function that will be called when modmail are made.
         subreddit : str or Subreddit
             The subreddit to poll with this function.
@@ -217,7 +217,7 @@ class Banhammer:
 
         Parameters
         ----------
-        func : Callable[RedditItem, Awaitable[None]]
+        func : Callable[[RedditItem], Awaitable[None]]
             The function that will be called when unmoderated posts are made.
         subreddit : str or Subreddit
             The subreddit to poll with this function.
@@ -248,7 +248,7 @@ class Banhammer:
 
         Parameters
         ----------
-        func : Callable[RedditItem, Awaitable[None]]
+        func : Callable[[RedditItem], Awaitable[None]]
             The function that will be called when reported posts are made.
         subreddit : str or Subreddit
             The subreddit to poll with this function.
@@ -262,7 +262,7 @@ class Banhammer:
 
         Parameters
         ----------
-        func : Callable[RedditItem, Awaitable[None]]
+        func : Callable[[RedditItem], Awaitable[None]]
             The function that will be called when items are retrieved.
         sub_func : str
             The name of the generator found in the :class:`~banhammer.models.Subreddit` class.
@@ -357,7 +357,7 @@ class Banhammer:
 
         Parameters
         ----------
-        func : Callable[RedditItem, Awaitable[None]]
+        func : Callable[[RedditItem], Awaitable[None]]
             The function that will be called when mod actions are made.
         mods : Tuple[str]
             Moderators to search for if specified.
