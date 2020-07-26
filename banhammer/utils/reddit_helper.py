@@ -1,13 +1,12 @@
-import logging
 import re
 from urllib.parse import urlparse
 
 import apraw
 
+from ..const import logger
 from ..models import RedditItem
 
 URL_PATTERN = re.compile(r"((https:\/\/)?((www|old|np|mod)\.)?(reddit|redd){1}(\.com|\.it){1}([a-zA-Z0-9\/_]+))")
-logger = logging.getLogger("banhammer")
 
 
 async def get_item(reddit: apraw.Reddit, subreddits, str):
@@ -31,7 +30,7 @@ async def get_item_from_url(reddit: apraw.Reddit, subreddits, url):
                 if hasattr(modmail, "subject"):
                     return RedditItem(modmail, subreddit, "url")
             except Exception as e:
-                logger.error(e)
+                logger.error(f"Failed to fetch modmail by ID '{id}': {e}")
 
         return None
 
@@ -39,24 +38,28 @@ async def get_item_from_url(reddit: apraw.Reddit, subreddits, url):
     try:
         item = await reddit.comment(url=url)
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Failed to fetch comment by URL '{url}': {e}")
         try:
             item = await reddit.submission(url=url)
         except Exception as e:
-            logger.error(e)
+            logger.error(f"Failed to fetch submission by URL '{url}': {e}")
             return None
 
-    item_subreddit = await item.subreddit()
+    try:
+        item_subreddit = await item.subreddit()
+    except Exception as e:
+        logger.error(f"Failed to retrieve item {item} subreddit: {e}")
+        return None
+    else:
+        subreddit = None
+        for sub in subreddits:
+            s = await sub.get_subreddit()
+            if s.id == item_subreddit.id:
+                subreddit = sub
+                break
 
-    subreddit = None
-    for sub in subreddits:
-        s = await sub.get_subreddit()
-        if s.id == item_subreddit.id:
-            subreddit = sub
-            break
-
-    if subreddit:
-        return RedditItem(item, subreddit, "url")
+        if subreddit:
+            return RedditItem(item, subreddit, "url")
 
 
 def is_url(url):

@@ -1,16 +1,14 @@
-import logging
 import os
 from typing import TYPE_CHECKING, List
 
 from apraw.utils import BoundedSet
 
+from ..const import logger
 from .item import RedditItem
 from .reaction import get_reactions
 
 if TYPE_CHECKING:
     from ..banhammer import Banhammer
-
-logger = logging.getLogger("banhammer")
 
 
 class Subreddit:
@@ -99,7 +97,7 @@ class Subreddit:
                     self.reactions = reacts
                     loaded = True
             except Exception as e:
-                logger.error(e)
+                logger.error(f"Couldn't load wikipage: {e}")
 
         if not loaded:
             path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "reactions.yaml"))
@@ -107,7 +105,7 @@ class Subreddit:
                 try:
                     await subreddit.wiki.create("banhammer-reactions", f.read(), "Reactions not found")
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Couldn't create wikipage: {e}")
 
     def get_reactions(self, item: RedditItem):
         return [r for r in self.reactions if r.eligible(item)]

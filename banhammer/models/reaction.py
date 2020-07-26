@@ -3,6 +3,7 @@ from typing import List, Union
 from apraw.models import (Comment, ModmailConversation, ModmailMessage,
                           Submission)
 
+from ..const import logger
 from ..exceptions import NoItemGiven, NotEligibleItem
 from ..utils import yaml
 from .item import RedditItem
@@ -36,16 +37,20 @@ class ReactionPayload:
 class ReactionHandler:
 
     async def handle(self, reaction: 'Reaction', item: RedditItem, payload: ReactionPayload):
+        logger.info(f"Handling item: {item}")
         if isinstance(item.item, (ModmailConversation, ModmailMessage)):
             conversation = item.item.conversation if isinstance(item, ModmailMessage) else item.item
             if reaction.archive:
                 await conversation.archive()
+                logger.info("Archived modmail.")
                 payload.actions.append("archived")
             if reaction.mute:
                 await conversation.mute()
+                logger.info("Muted modmail.")
                 payload.actions.append("muted")
             if reaction.reply != "":
                 await conversation.reply(reaction.reply)
+                logger.info("Replied to modmail.")
                 payload.actions.append("replied to")
             return payload
 
@@ -54,38 +59,46 @@ class ReactionHandler:
             payload.actions.append("removed")
             await item.item.mod.lock()
             payload.actions.append("locked")
+            logger.info("Removed and locked submission of deleted user.")
 
             payload.feed(item, False, "Banhammer")
             return payload
 
         if reaction.approve:
             await item.item.mod.approve()
+            logger.info("Approved item.")
             payload.actions.append("approved")
         else:
             await item.item.mod.remove()
+            logger.info("Removed item.")
             payload.actions.append("removed")
 
         if reaction.lock or not reaction.approve:
             await item.item.mod.lock()
+            logger.info("Locked item.")
             payload.actions.append("locked")
-        else:
-            if item.item.locked:
-                await item.item.mod.unlock()
-                payload.actions.append("unlocked")
+        elif item.item.locked:
+            await item.item.mod.unlock()
+            logger.info("Unlocked item.")
+            payload.actions.append("unlocked")
 
         if isinstance(item.item, Submission):
             if reaction.flair:
                 await item.item.mod.flair(text=reaction.flair)
+                logger.info("Flaired item.")
                 payload.actions.append("flaired")
 
             if reaction.mark_nsfw:
                 await item.item.mod.nsfw()
+                logger.info("Marked item as NSFW.")
                 payload.actions.append("marked NSFW")
 
         if reaction.reply:
             reply = await item.item.reply(reaction.reply)
+            logger.info("Replied to item.")
             if reaction.distinguish_reply:
                 await reply.mod.distinguish(sticky=reaction.sticky_reply)
+                logger.info("Distinguished reply.")
             payload.actions.append("replied to")
 
         if isinstance(reaction.ban, int):
@@ -94,12 +107,14 @@ class ReactionHandler:
                 subreddit = await item.item.subreddit()
                 await subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules",
                                            ban_message=ban_message, note="Banhammer Ban")
+                logger.info("Permanently banned author.")
                 payload.actions.append("/u/" + item.item.author.name + " permanently banned")
             else:
                 subreddit = await item.item.subreddit()
                 await subreddit.banned.add(item.item.author.name, ban_reason="Breaking Rules",
                                            duration=reaction.ban, ban_message=ban_message,
                                            note="Banhammer Ban")
+                logger.info(f"Banned author for {reaction.ban} day(s).")
                 payload.actions.append(f"/u/{item.item.author.name} banned for {reaction.ban} day(s)")
 
         return payload
@@ -128,6 +143,9 @@ class Reaction:
         self.min_votes = kwargs.get("min_votes", 1)
 
     def __str__(self):
+        return self.emoji
+
+    def __repr__(self):
         str = self.emoji
 
         if self.type in ["submission", "comment", ""]:
@@ -190,6 +208,6 @@ def get_reactions(yml: str):
 
 
 def ignore_reactions(reactions: Reaction, remove: Union[List[str], Reaction]):
-    emojis = set(remove.emoji if isinstance(remove, Reaction) else i for i in remove)
-    reactions = [r for r in reactions if react.emoji not in emojis]
+    emojis = set(str(remove) if isinstance(remove, (str, Reaction)) else str(i) for i in remove)
+    reactions = [r for r in reactions if r.emoji not in emojis]
     return reactions

@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os
 import re
 from typing import Awaitable, Callable, Union
@@ -9,11 +8,11 @@ import apraw
 import discord
 from apraw.utils import ExponentialCounter
 
+from .const import logger
 from .models import MessageBuilder, ReactionHandler, RedditItem, Subreddit
 from .utils import reddit_helper
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
-logger = logging.getLogger("banhammer")
 
 
 class Banhammer:
@@ -113,13 +112,13 @@ class Banhammer:
             async def handle_new(item: RedditItem):
                 pass
         """
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_new_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_new_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_new_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         """
         Add a function to handle new posts.
 
@@ -144,13 +143,13 @@ class Banhammer:
             async def handle_comments(item: RedditItem):
                 pass
         """
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_comments_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_comments_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_comments_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         """
         Add a function to handle comments.
 
@@ -175,13 +174,13 @@ class Banhammer:
             async def handle_mail(item: RedditItem):
                 pass
         """
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_mail_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_mail_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_mail_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         """
         Add a function to handle modmail.
 
@@ -206,13 +205,13 @@ class Banhammer:
             async def handle_queue(item: RedditItem):
                 pass
         """
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_queue_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_queue_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_queue_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         """
         Add a function to handle unmoderated posts.
 
@@ -237,13 +236,13 @@ class Banhammer:
             async def handle_reports(item: RedditItem):
                 pass
         """
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_report_func(func, **kwargs)
             return func
 
         return assign
 
-    def add_report_func(self, func: Callable[RedditItem, Awaitable[None]], **kwargs):
+    def add_report_func(self, func: Callable[[RedditItem], Awaitable[None]], **kwargs):
         """
         Add a function to handle reported posts.
 
@@ -256,7 +255,7 @@ class Banhammer:
         """
         self.add_items_func(func, "get_reports", **kwargs)
 
-    def add_items_func(self, func: Callable[RedditItem, Awaitable[None]], sub_func: str, **kwargs):
+    def add_items_func(self, func: Callable[[RedditItem], Awaitable[None]], sub_func: str, **kwargs):
         """
         Add a function to handle the items from a specific generator in the
         :class:`~banhammer.models.Subreddit` class.
@@ -291,7 +290,7 @@ class Banhammer:
                     watching = discord.Activity(type=discord.ActivityType.watching, name="Reddit")
                     await self.bot.change_presence(activity=watching)
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Failed to change bot presence: {e}")
 
             for func in self.item_funcs:
                 if func["sub"]:
@@ -305,7 +304,7 @@ class Banhammer:
                             found = True
                             await func["func"](post)
                     except Exception as e:
-                        logger.error(e)
+                        logger.error(f"Failed to retrieve post from {func['sub_func']} in {sub}: {e}")
 
             for func in self.action_funcs:
                 if func["sub"]:
@@ -318,13 +317,13 @@ class Banhammer:
                             found = True
                             await func["func"](action)
                     except Exception as e:
-                        logger.error(e)
+                        logger.error(f"Failed to retrieve mod action from {sub}: {e}")
 
             if self.bot is not None and self.change_presence:
                 try:
                     await self.bot.change_presence(activity=None)
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(f"Failed to change bot presence: {e}")
 
             if not found:
                 wait_time = counter.count()
@@ -346,13 +345,13 @@ class Banhammer:
             async def handle_mod_actions(item: RedditItem):
                 pass
         """
-        def assign(func: Callable[RedditItem, Awaitable[None]]):
+        def assign(func: Callable[[RedditItem], Awaitable[None]]):
             self.add_mod_actions_func(func, *args, **kwargs)
             return func
 
         return assign
 
-    def add_mod_actions_func(self, func: Callable[RedditItem, Awaitable[None]], *args, **kwargs):
+    def add_mod_actions_func(self, func: Callable[[RedditItem], Awaitable[None]], *args, **kwargs):
         """
         Add a function to handle mod actions.
 
@@ -404,7 +403,7 @@ class Banhammer:
         embed.title = "Configured reactions"
         for sub in self.subreddits:
             embed.add_field(name="/r/" + str(sub),
-                            value="\n".join([str(r) for r in sub.reactions]),
+                            value="\n".join([repr(r) for r in sub.reactions]),
                             inline=False)
         return embed
 
