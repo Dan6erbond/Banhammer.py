@@ -1,16 +1,14 @@
-import logging
 import os
 from typing import TYPE_CHECKING, List
 
 from apraw.utils import BoundedSet
 
+from ..const import logger
 from .item import RedditItem
 from .reaction import get_reactions
 
 if TYPE_CHECKING:
     from ..banhammer import Banhammer
-
-logger = logging.getLogger("banhammer")
 
 
 class Subreddit:

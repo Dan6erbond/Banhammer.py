@@ -1,4 +1,3 @@
-import logging
 from typing import TYPE_CHECKING, Union
 
 import apraw
@@ -6,10 +5,11 @@ import discord
 from apraw.models import (Comment, Message, ModmailConversation,
                           ModmailMessage, Submission, Subreddit)
 
+from ..const import logger
+
 if TYPE_CHECKING:
     from .subreddit import Subreddit
 
-logger = logging.getLogger("banhammer")
 
 
 class RedditItem:

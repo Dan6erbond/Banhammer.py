@@ -1,13 +1,12 @@
-import logging
 import re
 from urllib.parse import urlparse
 
 import apraw
 
+from ..const import logger
 from ..models import RedditItem
 
 URL_PATTERN = re.compile(r"((https:\/\/)?((www|old|np|mod)\.)?(reddit|redd){1}(\.com|\.it){1}([a-zA-Z0-9\/_]+))")
-logger = logging.getLogger("banhammer")
 
 
 async def get_item(reddit: apraw.Reddit, subreddits, str):

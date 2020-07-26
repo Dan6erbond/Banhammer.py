@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os
 import re
 from typing import Awaitable, Callable, Union
@@ -9,11 +8,11 @@ import apraw
 import discord
 from apraw.utils import ExponentialCounter
 
+from .const import logger
 from .models import MessageBuilder, ReactionHandler, RedditItem, Subreddit
 from .utils import reddit_helper
 
 banhammer_purple = discord.Colour(0).from_rgb(207, 206, 255)
-logger = logging.getLogger("banhammer")
 
 
 class Banhammer:
