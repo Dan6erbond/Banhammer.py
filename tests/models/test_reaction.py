@@ -1,7 +1,7 @@
 import apraw
 import pytest
 
-from banhammer.models import RedditItem, Subreddit, ReactionPayload
+from banhammer.models import ReactionPayload, RedditItem, Subreddit
 
 
 class TestReactionPayload:
@@ -36,3 +36,17 @@ class TestReactionPayload:
         payload.feed(item, False, "Test", "🔥", "Test reply.")
 
         assert isinstance(await payload.get_message(), str)
+
+
+class TestReaction:
+    @pytest.mark.asyncio
+    async def test_copy(self, subreddit: Subreddit):
+        await subreddit.load_reactions()
+
+        old = subreddit.reactions[0]
+        new = old.copy()
+
+        assert isinstance(new, type(old))
+
+        for key in new.SCHEMA:
+            assert getattr(new, key) == getattr(old, key)
