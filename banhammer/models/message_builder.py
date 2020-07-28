@@ -1,12 +1,14 @@
 from datetime import datetime
+from typing import List
 
 import discord
 from apraw.models import ModmailConversation, ModmailMessage
 from discord.utils import escape_markdown
 
-from ..const import BOT_DISCLAIMER, logger
+from ..const import BANHAMMER_PURPLE, BOT_DISCLAIMER, logger
 from .item import RedditItem
 from .reaction import ReactionPayload
+from .subreddit import Subreddit
 
 
 class MessageBuilder:
@@ -112,12 +114,12 @@ class MessageBuilder:
 
     def get_ban_message(self, item: RedditItem, ban_duration: int):
         ban_type = "permanent" if not ban_duration else "temporary"
-        disclaimer = BOT_DISCLAIMER.format(item.subreddit.get_contact_url())
+        disclaimer = BOT_DISCLAIMER.format(item.subreddit.contact_url)
         return f"Our moderator team has reviewed [this post]({item.url}) and decided to give you a {ban_type} ban. " \
                f"If you wish to appeal this ban, please respond to this message.\n\n{disclaimer}"
 
     def format_reply(self, item: RedditItem, reply: str):
-        disclaimer = BOT_DISCLAIMER.format(item.subreddit.get_contact_url())
+        disclaimer = BOT_DISCLAIMER.format(item.subreddit.contact_url)
         return f"{reply}\n\n{disclaimer}"
 
     async def get_payload_message(self, payload: ReactionPayload):
@@ -136,6 +138,7 @@ class MessageBuilder:
             payload.actions.append("dismissed")
 
         embed = discord.Embed(
+            description=f"[{payload.item.type.title()}]({payload.item.url}) by /u/{author_name}.",
             colour=embed_color or payload.item.subreddit.banhammer.embed_color
         )
 
@@ -144,6 +147,87 @@ class MessageBuilder:
         author_name = escape_markdown(await payload.item.get_author_name())
 
         embed.set_author(name=f"{payload.item.type.title()} {' and '.join(payload.actions)} by {payload.user}!")
-        embed.description = f"[{payload.item.type.title()}]({payload.item.url}) by /u/{author_name}."
+
+        return embed
+
+    def get_reactions_embed(self, subreddits: List[Subreddit], embed_color: discord.Color = None):
+        """
+        Load an embed with all the configured reactions per subreddit.
+
+        Parameters
+        ----------
+        subreddits : List[Subreddit]
+            The subreddits to be included in the overview.
+        embed_color : discord.Color
+            The color to be used for the embed, if not specified, the
+            :attr:`~banhammer.Banhammer.embed_color` is used.
+
+        Returns
+        -------
+        embed: discord.Embed
+            The embed listing all the configured reactions per subreddit.
+        """
+        embed = discord.Embed(
+            title="Configured reactions",
+            colour=embed_color or subreddits[0].banhammer.embed_color if subreddits else BANHAMMER_PURPLE
+        )
+
+        embed.timestamp = datetime.utcnow()
+
+        for sub in subreddits:
+            embed.add_field(name="/r/" + str(sub),
+                            value="\n".join([repr(r) for r in sub.reactions]),
+                            inline=False)
+        return embed
+
+    def get_subreddits_embed(self, subreddits: List[Subreddit], embed_color: discord.Color = None):
+        """
+        Load an embed with all the configured subreddits and their enabled streams.
+
+        Parameters
+        ----------
+        subreddits : List[Subreddit]
+            The subreddits to be included in the overview.
+        embed_color : discord.Color
+            The color to be used for the embed, if not specified, the
+            :attr:`~banhammer.Banhammer.embed_color` is used.
+
+        Returns
+        -------
+        embed: discord.Embed
+            The embed of all the subreddits and their enabled streams.
+        """
+        embed = discord.Embed(
+            title="Subreddits' statuses",
+            description="\n".join([s.status for s in subreddits]),
+            colour=embed_color or subreddits[0].banhammer.embed_color if subreddits else BANHAMMER_PURPLE
+        )
+        embed.timestamp = datetime.utcnow()
+        return embed
+
+    async def get_subreddit_reactions_embed(self, subreddit: Subreddit, embed_color: discord.Color = None):
+        embed = discord.Embed(
+            colour=embed_color or subreddit.banhammer.embed_color
+        )
+
+        embed.timestamp = datetime.utcnow()
+
+        sub = await subreddit.get_subreddit()
+        embed.set_author(
+            name=f"/r/{subreddit} Configured Reactions",
+            url=f"https://www.reddit.com/r/{subreddit}/wiki/banhammer-reactions",
+            icon_url=sub.community_icon or discord.Embed.Empty)
+
+        fields = list()
+        for reaction in subreddit.reactions:
+            text = repr(reaction).replace(str(reaction) + " | ", "")
+            if reaction.reply:
+                text.replace(" | reply", "")
+                text += f"\n\n**Reply**\n>>> {reaction.reply}"
+                fields.append({"name": str(reaction), "value": text})
+            else:
+                fields = [{"name": str(reaction), "value": text}, *fields]
+        for field in fields:
+            embed.add_field(**field)
 
         return embed

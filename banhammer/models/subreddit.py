@@ -70,7 +70,8 @@ class Subreddit:
 
         return str
 
-    def get_contact_url(self):
+    @property
+    def contact_url(self):
         return "https://www.reddit.com/message/compose/?to=/r/" + self.name
 
     async def get_subreddit(self):
@@ -106,6 +107,9 @@ class Subreddit:
                     await subreddit.wiki.create("banhammer-reactions", f.read(), "Reactions not found")
                 except Exception as e:
                     logger.error(f"Couldn't create wikipage: {e}")
+
+    async def get_reactions_embed(self, *args, **kwargs):
+        return await self.banhammer.message_builder.get_subreddit_reactions_embed(self, *args, **kwargs)
 
     def get_reactions(self, item: RedditItem):
         return [r for r in self.reactions if r.eligible(item)]
