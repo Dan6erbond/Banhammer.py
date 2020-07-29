@@ -6,7 +6,7 @@ __title__ = "banhammer"
 __author__ = "Dan6erbond"
 __license__ = "GNU General Public License v3 (GPLv3)"
 __copyright__ = "© Copyright 2020 Dan6erbond"
-__version__ = "2.4.0"
+__version__ = "2.5.0"
 __tag__ = "beta"
 
 BOT_VERSION_TEXT = "Banhammer.py v" + f"{__version__}-{__tag__}" if __tag__ else __version__
