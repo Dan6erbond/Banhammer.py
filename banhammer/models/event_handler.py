@@ -36,20 +36,27 @@ class EventFilter:
         if not self._values:
             return True
 
-        match = True
-
         if self._attribute == ItemAttribute.MOD:
             if item.type != "mod action":
                 return False
             mod_name = await item.get_author_name()
-            match = not any(mod_name.lower() == str(v).lower() for v in self._values)
+            if not any(mod_name.lower() == str(v).lower() for v in self._values):
+                return False
+            elif self._reverse:
+                return False
         elif self._attribute == ItemAttribute.AUTHOR:
             author_name = await item.get_author_name()
-            match = not any(author_name.lower() == str(v).lower() for v in self._values)
+            if not any(author_name.lower() == str(v).lower() for v in self._values):
+                return False
+            elif self._reverse:
+                return False
         elif self._attribute == ItemAttribute.SUBREDDIT:
-            match = not any(str(item.subreddit).lower() == str(v).lower() for v in self._values)
+            if not any(str(item.subreddit).lower() == str(v).lower() for v in self._values):
+                return False
+            elif self._reverse:
+                return False
 
-        return (not self._reverse and match) or (self._reverse and not match)
+        return True
 
     def is_subreddit_valid(self, subreddit: 'Subreddit'):
         return self._attribute != ItemAttribute.SUBREDDIT or any(
